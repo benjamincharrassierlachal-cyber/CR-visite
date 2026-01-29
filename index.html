@@ -1,0 +1,2580 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Compte rendu de visite - Saisie & Visualisation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f5;
+      color: #111827;
+    }
+    header {
+      background: #111827;
+      color: #f9fafb;
+      padding: 0.8rem 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    header .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    main {
+      padding: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1);
+      position: relative;
+    }
+    .card h2 {
+      margin-top: 0;
+      font-size: 1rem;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 0.4rem;
+      margin-bottom: 0.8rem;
+      text-align: center;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 0.8rem;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      margin-bottom: 0.2rem;
+      color: #374151;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.45rem 0.55rem;
+      border-radius: 0.5rem;
+      border: 1px solid #d1d5db;
+      font-size: 0.85rem;
+    }
+    textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+    .note {
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+    .actions-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      align-items: center;
+    }
+    .btn {
+      border: none;
+      padding: 0.55rem 0.95rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .btn-primary {
+      background: #2563eb;
+      color: #ffffff;
+    }
+    .btn-danger {
+      background: #dc2626;
+      color: #ffffff;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: #f9fafb;
+      border: 1px solid #4b5563;
+    }
+
+    /* Petits boutons pour les images */
+    .btn-small {
+      padding: 0.35rem 0.7rem;
+      font-size: 0.78rem;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      color: #111827;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .btn-small:hover {
+      background: #e5e7eb;
+    }
+
+    .rating-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.8rem;
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+    }
+    .rating-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      align-items: center;
+    }
+    .rating-options label {
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+      margin: 0;
+      font-size: 0.8rem;
+    }
+    .subsection-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+    .yesno-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-top: 0.4rem;
+    }
+    .yesno-table th,
+    .yesno-table td {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 0.12rem 0.25rem;
+      text-align: center;
+      line-height: 1.15;
+    }
+    .yesno-table th:first-child,
+    .yesno-table td:first-child {
+      text-align: left;
+    }
+    .yesno-table th {
+      background: #f3f4f6;
+    }
+    details summary {
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+    details[open] summary {
+      margin-bottom: 0.6rem;
+    }
+
+    /* Groupe d’inputs image (galerie / appareil photo + vignettes) */
+    .image-input-group {
+      margin-top: 0.3rem;
+    }
+    .image-input-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.4rem;
+    }
+    .image-thumbs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      align-items: center;
+      font-size: 0.75rem;
+      color: #6b7280;
+      min-height: 1.3rem;
+    }
+    .thumb {
+      position: relative;
+      display: inline-block;
+    }
+    .thumb img {
+      display: block;
+      width: 72px;
+      height: 72px;
+      object-fit: cover;
+      border-radius: 0.4rem;
+      border: 1px solid #e5e7eb;
+    }
+    .thumb-remove {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      border: none;
+      background: #dc2626;
+      color: #fff;
+      font-size: 0.75rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .thumb-placeholder {
+      font-style: italic;
+    }
+    .hidden-file-input {
+      display: none;
+    }
+
+    /* Zones de collage */
+    .image-paste-zone {
+      margin-top: 0.3rem;
+      padding: 0.4rem 0.6rem;
+      border: 1px dashed #bbb;
+      border-radius: 0.5rem;
+      font-size: 0.78rem;
+      font-style: italic;
+      cursor: pointer;
+      color: #4b5563;
+    }
+    .image-paste-zone:focus {
+      outline: none;
+      border-color: #888;
+    }
+    .image-paste-zone.active-paste-zone {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+    .image-paste-zone-success {
+      border-color: #16a34a;
+      background: #ecfdf3;
+      color: #166534;
+    }
+
+    /* VISUALISATION STYLE - THÈME CLAIR */
+    body.visual-mode {
+      background: #f3f4f6;
+      color: #111827;
+    }
+    body.visual-mode main {
+      max-width: 1200px;
+    }
+    body.visual-mode .slide {
+      background: #ffffff;
+      border-radius: 1rem;
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border: 1px solid #e5e7eb;
+      position: relative;
+    }
+    body.visual-mode .slide-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0 0 0.6rem;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 0.4rem;
+      color: #1f2937;
+      text-align: center;
+    }
+    body.visual-mode .slide-title-main {
+      text-align: center;
+      font-size: 1.4rem;
+    }
+    body.visual-mode .slide-subtitle {
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin-bottom: 0.8rem;
+    }
+    body.visual-mode .label {
+      font-size: 0.75rem;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.15rem;
+    }
+    body.visual-mode .value {
+      font-size: 0.9rem;
+      color: #111827;
+      white-space: pre-wrap;
+    }
+    body.visual-mode .muted {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+    body.visual-mode .pill {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      background: #e5e7eb;
+      color: #374151;
+      margin-right: 0.3rem;
+      margin-bottom: 0.25rem;
+    }
+	body.visual-mode .pill.green { background: #16a34a; color: #ffffff; }   /* TOP vert franc */
+body.visual-mode .pill.lightgreen { background: #bbf7d0; color: #166534; } /* Progrès possible vert clair */
+body.visual-mode .pill.orange { background: #fed7aa; color: #9a3412; }  /* Insuffisant orange clair */
+body.visual-mode .pill.red   { background: #dc2626; color: #ffffff; }   /* Mauvais rouge franc */
+    body.visual-mode .big-note {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #111827;
+    }
+    body.visual-mode .cover-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      gap: 1rem;
+      align-items: center;
+    }
+    @media (max-width: 768px) {
+      body.visual-mode .cover-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    body.visual-mode .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-top: 0.4rem;
+    }
+    body.visual-mode .table th,
+    body.visual-mode .table td {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 0.25rem 0.3rem;
+      text-align: left;
+    }
+    body.visual-mode .table th {
+      background: #f9fafb;
+      color: #111827;
+      font-weight: 500;
+    }
+    body.visual-mode .cover-magasin {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111827;
+      margin-top: 0.3rem;
+    }
+    body.visual-mode .cover-date {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #111827;
+      margin-bottom: 0.8rem;
+    }
+    body.visual-mode .cover-theme-table td:first-child {
+      font-size: 0.95rem;
+      color: #2563eb;
+      font-weight: 600;
+    }
+    body.visual-mode .cover-theme-table td:nth-child(2) .pill {
+      font-size: 0.95rem;
+      padding: 0.25rem 0.7rem;
+    }
+
+    .photo-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.4rem;
+    }
+    .photo-grid img {
+      max-height: 320px;
+      border-radius: 0.5rem;
+      border: 1px solid #e5e7eb;
+      object-fit: cover;
+    }
+    .photo-cover img {
+      max-height: 420px;
+      border-radius: 0.75rem;
+      border: 1px solid #e5e7eb;
+      object-fit: cover;
+    }
+
+    body.visual-mode .gauge {
+      position: relative;
+      width: 220px;
+      max-width: 100%;
+      margin: 0.6rem auto 0.4rem;
+    }
+    body.visual-mode .gauge-arc svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    body.visual-mode .gauge-needle {
+  position: absolute;
+  left: 50%;
+  bottom: 8%;          /* même ancrage que le rond central */
+  width: 0;            /* important : aiguille = bordure, pas fond */
+  height: 55%;
+  border-left: 2px solid #111827;  /* TRAIT qui s’imprime */
+  border-radius: 999px;
+  transform-origin: 50% 100%;
+  transform: translateX(-50%);
+  transition: transform 0.3s ease-out;
+}
+
+    body.visual-mode .gauge-center {
+      position: absolute;
+      left: 50%;
+      bottom: 8%;
+      transform: translateX(-50%);
+      text-align: center;
+    }
+    body.visual-mode .gauge-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #111827;
+    }
+    body.visual-mode .gauge-text {
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+    body.visual-mode .exp-list {
+      font-size: 0.9rem;
+      color: #374151;
+      padding-left: 1.1rem;
+      margin: 0;
+      line-height: 1.0;
+    }
+    body.visual-mode .exp-list li {
+      margin: 0.02rem 0;
+    }
+    body.visual-mode .exp-value {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    /* LOGO EN HAUT À DROITE DES SLIDES */
+    body.visual-mode .slide-logo {
+      position: absolute;
+      right: 0.8rem;
+      top: 0.6rem;
+      opacity: 0.9;
+      width: 90px;
+    }
+    body.visual-mode .slide-logo svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Lignes plus compactes dans les tableaux OUI / NON ciblés */
+    .yesno-table.yesno-compact th,
+    .yesno-table.yesno-compact td {
+      padding-top: 0.18rem;
+      padding-bottom: 0.18rem;
+      padding-left: 0.3rem;
+      padding-right: 0.3rem;
+      line-height: 1.2;
+    }
+
+    /* Items 2.0 en bleu dans les slides */
+    body.visual-mode .table td:first-child {
+      color: #2563eb;
+      font-weight: 600;
+    }
+
+    /* Numérotation des blocs de saisie */
+    .card::before {
+      content: attr(data-num);
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      font-size: 0.7rem;
+      color: #2563eb;
+      font-weight: 600;
+      opacity: 0.8;
+    }
+
+    /* Numérotation des blocs de visualisation */
+    body.visual-mode .slide::before {
+      content: attr(data-slide-num);
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      font-size: 0.7rem;
+      color: #2563eb;
+      font-weight: 600;
+      opacity: 0.8;
+    }
+
+    /* IMPRESSION */
+	@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #111827 !important;
+      }
+      header,
+      .actions,
+      .actions-form,
+      #btn-mode-saisie,
+      #btn-mode-visualisation,
+      #btn-print {
+        display: none !important;
+      }
+      main {
+        margin: 0;
+        padding: 0;
+        max-width: 100%;
+      }
+      .card,
+      .slide {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        -webkit-column-break-inside: avoid;
+        -moz-page-break-inside: avoid;
+        margin-bottom: 1rem;
+      }
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+      .card h2,
+      .slide-title,
+      .slide-title-main {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Compte rendu de visite</h1>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn btn-ghost" id="btn-mode-saisie">
+        ✍️ Mode saisie
+      </button>
+      <button type="button" class="btn btn-ghost" id="btn-mode-visualisation">
+        🎬 Mode visualisation
+      </button>
+      <button type="button" class="btn btn-ghost" id="btn-print">
+        🖨 Imprimer / PDF
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div id="form-container">
+      <form id="cr-form">
+        <!-- Synthèse de visite -->
+        <div class="card">
+          <h2>Synthèse de visite</h2>
+          <div class="grid-2">
+            <div>
+              <label for="dateVisite">Date de la visite</label>
+              <input type="date" id="dateVisite" name="dateVisite" />
+            </div>
+            <div>
+              <label for="magasin">Magasin</label>
+              <select id="magasin" name="magasin">
+                <option value="">-- Sélectionner --</option>
+                <option>PERIGUEUX</option>
+                <option>ST YRIEIX</option>
+                <option>ST ASTIER</option>
+                <option>RIBERAC 1</option>
+                <option>NONTRON</option>
+                <option>MONTPON</option>
+                <option>LE BUGUE</option>
+                <option>CREATEUR PX</option>
+                <option>GLANDON</option>
+                <option>EXCIDEUIL</option>
+                <option>VILLEREAL</option>
+                <option>BRANTOME</option>
+                <option>BELVES</option>
+                <option>BOULAZAC</option>
+                <option>RIBERAC 3</option>
+                <option>ST SEURIN</option>
+                <option>LA ROCHEFOUCAULD</option>
+                <option>RIBERAC 2</option>
+                <option>TRELISSAC</option>
+                <option>MONTAUBAN 2</option>
+                <option>BERGERAC</option>
+                <option>ST CYPRIEN</option>
+                <option>THIVIERS</option>
+                <option>MONTBRON</option>
+                <option>ST AIGULIN</option>
+                <option>SOUILLAC</option>
+                <option>MONTIGNAC</option>
+                <option>SOUILLAC 2</option>
+                <option>HAUTEFORT</option>
+                <option>PRIGONRIEUX</option>
+                <option>CASTILLONNES</option>
+                <option>O2000 MARSAC</option>
+                <option>O2000 PERIGUEUX</option>
+                <option>GO BERGERAC</option>
+                <option>GO BRETENOUX</option>
+                <option>GO TULLE</option>
+              </select>
+            </div>
+          </div>
+          <div class="subsection-title">Personnes présentes</div>
+          <div class="grid-2">
+            <div><label for="p1">Personne 1</label><input type="text" id="p1" name="p1" /></div>
+            <div><label for="p2">Personne 2</label><input type="text" id="p2" name="p2" /></div>
+            <div><label for="p3">Personne 3</label><input type="text" id="p3" name="p3" /></div>
+            <div><label for="p4">Personne 4</label><input type="text" id="p4" name="p4" /></div>
+            <div><label for="p5">Personne 5</label><input type="text" id="p5" name="p5" /></div>
+            <div><label for="p6">Personne 6</label><input type="text" id="p6" name="p6" /></div>
+            <div><label for="p7">Personne 7</label><input type="text" id="p7" name="p7" /></div>
+            <div><label for="p8">Personne 8</label><input type="text" id="p8" name="p8" /></div>
+          </div>
+
+          <div class="subsection-title" style="margin-top:0.8rem;">
+            Photo de couverture (image)
+          </div>
+          <div class="image-input-group" data-image-field="photoCouverture">
+            <div class="image-input-buttons">
+              <button type="button" class="btn-small" data-action="open-gallery">
+                📁 Galerie
+              </button>
+              <button type="button" class="btn-small" data-action="open-camera">
+                📷 Appareil photo
+              </button>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              class="hidden-file-input"
+              data-image-field="photoCouverture"
+              data-source="gallery"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              class="hidden-file-input"
+              data-image-field="photoCouverture"
+              data-source="camera"
+            />
+            <div class="image-thumbs" data-image-field="photoCouverture">
+              <div class="thumb-placeholder">Aucune image pour le moment</div>
+            </div>
+          </div>
+          <div class="note">
+            Cette photo servira de visuel principal sur la page de garde (non sauvegardée, session en cours uniquement).
+          </div>
+          <div class="image-paste-zone" data-image-field="photoCouverture">
+            Coller une capture d’écran ici (Ctrl+V)
+          </div>
+        </div>
+
+        <!-- CA du magasin -->
+        <div class="card" data-num="1">
+          <h2>CA du magasin</h2>
+          <div class="grid-2">
+            <div>
+              <label for="caRealise">C.A. réalisé (€)</label>
+              <input type="number" step="0.01" id="caRealise" name="caRealise" />
+            </div>
+            <div>
+              <label for="ecartValeur">Écart en valeur (€)</label>
+              <input type="number" step="0.01" id="ecartValeur" name="ecartValeur" />
+            </div>
+            <div>
+              <label for="ecartPourcent">Écart en %</label>
+              <input type="number" step="0.01" id="ecartPourcent" name="ecartPourcent" />
+            </div>
+          </div>
+          <label for="caCommentaire" class="subsection-title">Commentaire CA</label>
+          <textarea id="caCommentaire" name="caCommentaire"></textarea>
+
+          <div class="subsection-title">Images (optionnel)</div>
+          <div class="image-input-group" data-image-field="caImages">
+            <div class="image-input-buttons">
+              <button type="button" class="btn-small" data-action="open-gallery">
+                📁 Galerie
+              </button>
+              <button type="button" class="btn-small" data-action="open-camera">
+                📷 Appareil photo
+              </button>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              class="hidden-file-input"
+              data-image-field="caImages"
+              data-source="gallery"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              capture="environment"
+              class="hidden-file-input"
+              data-image-field="caImages"
+              data-source="camera"
+            />
+            <div class="image-thumbs" data-image-field="caImages">
+              <div class="thumb-placeholder">Aucune image pour le moment</div>
+            </div>
+          </div>
+          <div class="note">
+            Sur smartphone, utilisez le bouton « Appareil photo » pour prendre une photo et « Galerie » pour choisir une photo existante.
+          </div>
+          <div class="image-paste-zone" data-image-field="caImages">
+            Coller une capture d’écran ici (Ctrl+V)
+          </div>
+        </div>
+
+        <!-- Résultats commerciaux / Business -->
+        <div class="card" data-num="2">
+          <h2>Résultats commerciaux / Business</h2>
+
+          <div class="subsection-title">Synthèse (images)</div>
+          <div class="image-input-group" data-image-field="imgSynthese">
+            <div class="image-input-buttons">
+              <button type="button" class="btn-small" data-action="open-gallery">📁 Galerie</button>
+              <button type="button" class="btn-small" data-action="open-camera">📷 Appareil photo</button>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              class="hidden-file-input"
+              data-image-field="imgSynthese"
+              data-source="gallery"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              capture="environment"
+              class="hidden-file-input"
+              data-image-field="imgSynthese"
+              data-source="camera"
+            />
+            <div class="image-thumbs" data-image-field="imgSynthese">
+              <div class="thumb-placeholder">Aucune image pour le moment</div>
+            </div>
+          </div>
+          <div class="note">Photos pour illustrer la synthèse business.</div>
+          <div class="image-paste-zone" data-image-field="imgSynthese">
+            Coller une capture d’écran ici (Ctrl+V)
+          </div>
+
+          <div class="subsection-title" style="margin-top:0.6rem;">Volume (images)</div>
+          <div class="image-input-group" data-image-field="imgVolume">
+            <div class="image-input-buttons">
+              <button type="button" class="btn-small" data-action="open-gallery">📁 Galerie</button>
+              <button type="button" class="btn-small" data-action="open-camera">📷 Appareil photo</button>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              class="hidden-file-input"
+              data-image-field="imgVolume"
+              data-source="gallery"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              capture="environment"
+              class="hidden-file-input"
+              data-image-field="imgVolume"
+              data-source="camera"
+            />
+            <div class="image-thumbs" data-image-field="imgVolume">
+              <div class="thumb-placeholder">Aucune image pour le moment</div>
+            </div>
+          </div>
+          <div class="note">Photos liées au volume (tableaux, extraits, etc.).</div>
+          <div class="image-paste-zone" data-image-field="imgVolume">
+            Coller une capture d’écran ici (Ctrl+V)
+          </div>
+
+          <div class="subsection-title" style="margin-top:0.6rem;">Verres (images)</div>
+          <div class="image-input-group" data-image-field="imgVerres">
+            <div class="image-input-buttons">
+              <button type="button" class="btn-small" data-action="open-gallery">📁 Galerie</button>
+              <button type="button" class="btn-small" data-action="open-camera">📷 Appareil photo</button>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              class="hidden-file-input"
+              data-image-field="imgVerres"
+              data-source="gallery"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              capture="environment"
+              class="hidden-file-input"
+              data-image-field="imgVerres"
+              data-source="camera"
+            />
+            <div class="image-thumbs" data-image-field="imgVerres">
+              <div class="thumb-placeholder">Aucune image pour le moment</div>
+            </div>
+          </div>
+          <div class="note">Photos liées aux verres, mises en avant, présentations…</div>
+          <div class="image-paste-zone" data-image-field="imgVerres">
+            Coller une capture d’écran ici (Ctrl+V)
+          </div>
+
+          <label for="resForces" class="subsection-title" style="margin-top:0.8rem;">Forces</label>
+          <textarea id="resForces" name="resForces"></textarea>
+
+          <label for="resFaiblesses" class="subsection-title">Faiblesses</label>
+          <textarea id="resFaiblesses" name="resFaiblesses"></textarea>
+
+          <label for="resCommentaire" class="subsection-title">Commentaire Business</label>
+          <textarea id="resCommentaire" name="resCommentaire"></textarea>
+
+          <div class="rating-row">
+            <div>Appréciation de la partie BUSINESS :</div>
+            <div class="rating-options">
+              <label><input type="radio" name="noteBusiness" value="top"> TOP</label>
+              <label><input type="radio" name="noteBusiness" value="progres"> Progrès possible</label>
+              <label><input type="radio" name="noteBusiness" value="insuffisant"> Insuffisant</label>
+              <label><input type="radio" name="noteBusiness" value="mauvais"> Mauvais</label>
+            </div>
+          </div>
+        </div>
+		
+		<!-- Garantie -->
+<div class="card" data-num="3">
+  <h2>Garantie</h2>
+
+  <div class="grid-2">
+    <div>
+      <label for="garantieTaux" class="subsection-title">Taux de proposition ?</label>
+      <input type="text" id="garantieTaux" name="garantieTaux" placeholder="Ex: 35%" />
+    </div>
+  </div>
+
+  <label for="garantieComment" class="subsection-title">Commentaire Garantie</label>
+  <textarea id="garantieComment" name="garantieComment"></textarea>
+
+  <div class="subsection-title">Images Garantie (optionnel)</div>
+  <div class="image-input-group" data-image-field="garantieImages">
+    <div class="image-input-buttons">
+      <button type="button" class="btn-small" data-action="open-gallery">📁 Galerie</button>
+      <button type="button" class="btn-small" data-action="open-camera">📷 Appareil photo</button>
+    </div>
+    <input
+      type="file"
+      accept="image/*"
+      multiple
+      class="hidden-file-input"
+      data-image-field="garantieImages"
+      data-source="gallery"
+    />
+    <input
+      type="file"
+      accept="image/*"
+      multiple
+      capture="environment"
+      class="hidden-file-input"
+      data-image-field="garantieImages"
+      data-source="camera"
+    />
+    <div class="image-thumbs" data-image-field="garantieImages">
+      <div class="thumb-placeholder">Aucune image pour le moment</div>
+    </div>
+  </div>
+
+  <div class="note">Photos liées à la Garantie (stats, affichage, supports…).</div>
+  <div class="image-paste-zone" data-image-field="garantieImages">
+    Coller une capture d’écran ici (Ctrl+V)
+  </div>
+
+  <div class="rating-row">
+    <div>Appréciation de la Garantie :</div>
+    <div class="rating-options">
+      <label><input type="radio" name="noteGarantie" value="top"> TOP</label>
+      <label><input type="radio" name="noteGarantie" value="progres"> Progrès possible</label>
+      <label><input type="radio" name="noteGarantie" value="insuffisant"> Insuffisant</label>
+      <label><input type="radio" name="noteGarantie" value="mauvais"> Mauvais</label>
+    </div>
+  </div>
+</div>
+
+
+        <!-- 2.0 -->
+        <div class="card" data-num="3">
+          <h2>2.0</h2>
+          <p class="note">Présence et activité des outils 2.0 (présence en magasin / actif).</p>
+          <table class="yesno-table">
+            <thead>
+              <tr>
+                <th>Outil</th>
+                <th>Présent - OUI</th>
+                <th>Présent - NON</th>
+                <th>Actif - OUI</th>
+                <th>Actif - NON</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>META</td>
+                <td><input type="radio" name="metaPresent" value="oui" /></td>
+                <td><input type="radio" name="metaPresent" value="non" /></td>
+                <td><input type="radio" name="metaActif" value="oui" /></td>
+                <td><input type="radio" name="metaActif" value="non" /></td>
+                <td><input type="text" name="metaScore" /></td>
+              </tr>
+              <tr>
+                <td>NUANCE</td>
+                <td><input type="radio" name="nuancePresent" value="oui" /></td>
+                <td><input type="radio" name="nuancePresent" value="non" /></td>
+                <td><input type="radio" name="nuanceActif" value="oui" /></td>
+                <td><input type="radio" name="nuanceActif" value="non" /></td>
+                <td><input type="text" name="nuanceScore" /></td>
+              </tr>
+              <tr>
+                <td>LYLEOO</td>
+                <td><input type="radio" name="lyleooPresent" value="oui" /></td>
+                <td><input type="radio" name="lyleooPresent" value="non" /></td>
+                <td><input type="radio" name="lyleooActif" value="oui" /></td>
+                <td><input type="radio" name="lyleooActif" value="non" /></td>
+                <td><input type="text" name="lyleooScore" /></td>
+              </tr>
+              <tr>
+                <td>VISIOFICE X</td>
+                <td><input type="radio" name="visioPresent" value="oui" /></td>
+                <td><input type="radio" name="visioPresent" value="non" /></td>
+                <td><input type="radio" name="visioActif" value="oui" /></td>
+                <td><input type="radio" name="visioActif" value="non" /></td>
+                <td><input type="text" name="visioScore" /></td>
+              </tr>
+              <tr>
+                <td>OOMADE</td>
+                <td><input type="radio" name="oomadePresent" value="oui" /></td>
+                <td><input type="radio" name="oomadePresent" value="non" /></td>
+                <td><input type="radio" name="oomadeActif" value="oui" /></td>
+                <td><input type="radio" name="oomadeActif" value="non" /></td>
+                <td><input type="text" name="oomadeScore" /></td>
+              </tr>
+              <tr>
+                <td>E REPUTATION</td>
+                <td><input type="radio" name="erepPresent" value="oui" /></td>
+                <td><input type="radio" name="erepPresent" value="non" /></td>
+                <td><input type="radio" name="erepActif" value="oui" /></td>
+                <td><input type="radio" name="erepActif" value="non" /></td>
+                <td><input type="text" name="erepScore" /></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <label for="comment2_0" class="subsection-title">Commentaire 2.0</label>
+          <textarea id="comment2_0" name="comment2_0"></textarea>
+
+          <div class="rating-row">
+            <div>Appréciation de la partie 2.0 :</div>
+            <div class="rating-options">
+              <label><input type="radio" name="note2_0" value="top"> TOP</label>
+              <label><input type="radio" name="note2_0" value="progres"> Progrès possible</label>
+              <label><input type="radio" name="note2_0" value="insuffisant"> Insuffisant</label>
+              <label><input type="radio" name="note2_0" value="mauvais"> Mauvais</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Challenge & RBA -->
+        <div class="card" data-num="4">
+          <h2>Challenge & RBA</h2>
+          <div class="grid-2">
+            <div>
+              <label for="rba">RBA</label>
+              <textarea id="rba" name="rba"></textarea>
+            </div>
+            <div>
+              <label for="rbaNbre">Nombre</label>
+              <input type="text" id="rbaNbre" name="rbaNbre" />
+              <label for="rbaEvol" class="subsection-title">Évolution</label>
+              <textarea id="rbaEvol" name="rbaEvol"></textarea>
+            </div>
+          </div>
+
+          <label for="lesChallenges" class="subsection-title">Les challenges</label>
+          <textarea id="lesChallenges" name="lesChallenges"></textarea>
+
+          <label for="commentChallenge" class="subsection-title">Commentaire Challenge & RBA</label>
+          <textarea id="commentChallenge" name="commentChallenge"></textarea>
+
+          <div class="rating-row">
+            <div>Appréciation de la partie Challenge & RBA :</div>
+            <div class="rating-options">
+              <label><input type="radio" name="noteChallenge" value="top"> TOP</label>
+              <label><input type="radio" name="noteChallenge" value="progres"> Progrès possible</label>
+              <label><input type="radio" name="noteChallenge" value="insuffisant"> Insuffisant</label>
+              <label><input type="radio" name="noteChallenge" value="mauvais"> Mauvais</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Marketing / Opérations / Ophtalmos / CE -->
+        <div class="card" data-num="5">
+          <h2>Marketing / Opérations / Ophtalmos / CE</h2>
+          <label for="opEnCours" class="subsection-title">Opération en cours</label>
+          <textarea id="opEnCours" name="opEnCours"></textarea>
+
+          <label for="ophtalmos" class="subsection-title">Ophtalmos</label>
+          <textarea id="ophtalmos" name="ophtalmos"></textarea>
+
+          <label for="comites" class="subsection-title">Comités d'entreprises</label>
+          <textarea id="comites" name="comites"></textarea>
+        </div>
+
+        <!-- Gestion administrative -->
+        <div class="card" data-num="6">
+          <h2>Gestion administrative</h2>
+          <details open>
+            <summary>Dû clients</summary>
+            <div class="grid-2">
+              <div>
+                <label for="duQuantite">Quantité de dossiers</label>
+                <input type="number" id="duQuantite" name="duQuantite" />
+              </div>
+              <div>
+                <label for="duMontant">Montant</label>
+                <input type="number" step="0.01" id="duMontant" name="duMontant" />
+              </div>
+            </div>
+            <label for="duCommentaire" class="subsection-title">Commentaire Dû clients</label>
+            <textarea id="duCommentaire" name="duCommentaire"></textarea>
+            <label class="subsection-title">Image (optionnel)</label>
+            <div class="image-input-group" data-image-field="duImage">
+              <div class="image-input-buttons">
+                <button type="button" class="btn-small" data-action="open-gallery">📁 Galerie</button>
+                <button type="button" class="btn-small" data-action="open-camera">📷 Appareil photo</button>
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                class="hidden-file-input"
+                data-image-field="duImage"
+                data-source="gallery"
+              />
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                class="hidden-file-input"
+                data-image-field="duImage"
+                data-source="camera"
+              />
+              <div class="image-thumbs" data-image-field="duImage">
+                <div class="thumb-placeholder">Aucune image pour le moment</div>
+              </div>
+            </div>
+            <div class="image-paste-zone" data-image-field="duImage">
+              Coller une capture d’écran ici (Ctrl+V)
+            </div>
+          </details>
+
+          <details>
+            <summary>Encours Tiers payants</summary>
+            <div class="grid-2">
+              <div>
+                <label for="tpQuantite">Quantité de dossiers</label>
+                <input type="number" id="tpQuantite" name="tpQuantite" />
+              </div>
+              <div>
+                <label for="tpMontant">Montant</label>
+                <input type="number" step="0.01" id="tpMontant" name="tpMontant" />
+              </div>
+            </div>
+            <label for="tpCommentaire" class="subsection-title">Commentaire TP</label>
+            <textarea id="tpCommentaire" name="tpCommentaire"></textarea>
+            <label class="subsection-title">Image (optionnel)</label>
+            <div class="image-input-group" data-image-field="tpImage">
+              <div class="image-input-buttons">
+                <button type="button" class="btn-small" data-action="open-gallery">📁 Galerie</button>
+                <button type="button" class="btn-small" data-action="open-camera">📷 Appareil photo</button>
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                class="hidden-file-input"
+                data-image-field="tpImage"
+                data-source="gallery"
+              />
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                class="hidden-file-input"
+                data-image-field="tpImage"
+                data-source="camera"
+              />
+              <div class="image-thumbs" data-image-field="tpImage">
+                <div class="thumb-placeholder">Aucune image pour le moment</div>
+              </div>
+            </div>
+            <div class="image-paste-zone" data-image-field="tpImage">
+              Coller une capture d’écran ici (Ctrl+V)
+            </div>
+          </details>
+
+          <details>
+            <summary>Zeendoc</summary>
+            <label for="zeendoc" class="subsection-title">Commentaire Zeendoc</label>
+            <textarea id="zeendoc" name="zeendoc"></textarea>
+          </details>
+
+          <details>
+            <summary>Certification</summary>
+            <label for="certif" class="subsection-title">Commentaire Certification</label>
+            <textarea id="certif" name="certif"></textarea>
+          </details>
+
+          <div class="rating-row" style="margin-top:0.8rem;">
+            <div>Appréciation de la Gestion administrative :</div>
+            <div class="rating-options">
+              <label><input type="radio" name="noteGestion" value="top"> TOP</label>
+              <label><input type="radio" name="noteGestion" value="progres"> Progrès possible</label>
+              <label><input type="radio" name="noteGestion" value="insuffisant"> Insuffisant</label>
+              <label><input type="radio" name="noteGestion" value="mauvais"> Mauvais</label>
+            </div>
+          </div>
+
+          <label for="commentGestion" class="subsection-title">Commentaire global Gestion</label>
+          <textarea id="commentGestion" name="commentGestion"></textarea>
+        </div>
+
+        <!-- Contactologie & autres spécialités -->
+        <div class="card" data-num="7">
+          <h2>Contactologie</h2>
+
+          <label for="contactologie" class="subsection-title">La contactologie</label>
+          <textarea id="contactologie" name="contactologie"></textarea>
+
+          <div class="subsection-title">Images contactologie (optionnel)</div>
+          <div class="image-input-group" data-image-field="contactologieImages">
+            <div class="image-input-buttons">
+              <button type="button" class="btn-small" data-action="open-gallery">📁 Galerie</button>
+              <button type="button" class="btn-small" data-action="open-camera">📷 Appareil photo</button>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              class="hidden-file-input"
+              data-image-field="contactologieImages"
+              data-source="gallery"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              capture="environment"
+              class="hidden-file-input"
+              data-image-field="contactologieImages"
+              data-source="camera"
+            />
+            <div class="image-thumbs" data-image-field="contactologieImages">
+              <div class="thumb-placeholder">Aucune image pour le moment</div>
+            </div>
+          </div>
+          <div class="note">
+            Photos relatives à la contactologie (linéaires, mises en avant, statistiques, etc.).
+          </div>
+          <div class="image-paste-zone" data-image-field="contactologieImages">
+            Coller une capture d’écran ici (Ctrl+V)
+          </div>
+
+          <div class="rating-row">
+            <div>Appréciation de la contactologie :</div>
+            <div class="rating-options">
+              <label><input type="radio" name="noteContacto" value="top"> TOP</label>
+              <label><input type="radio" name="noteContacto" value="progres"> Progrès possible</label>
+              <label><input type="radio" name="noteContacto" value="insuffisant"> Insuffisant</label>
+              <label><input type="radio" name="noteContacto" value="mauvais"> Mauvais</label>
+            </div>
+          </div>
+
+          <details>
+            <summary>Montures et accessoires</summary>
+            <label for="montures" class="subsection-title">Montures et accessoires</label>
+            <textarea id="montures" name="montures"></textarea>
+          </details>
+
+          <details>
+            <summary>Divers</summary>
+            <label for="divers" class="subsection-title">Divers</label>
+            <textarea id="divers" name="divers"></textarea>
+          </details>
+
+          <details>
+            <summary>Astronomie</summary>
+            <label for="astro" class="subsection-title">Astronomie</label>
+            <textarea id="astro" name="astro"></textarea>
+          </details>
+        </div>
+
+        <!-- Tenue du magasin -->
+        <div class="card" data-num="8">
+          <h2>Tenue du magasin</h2>
+          <p class="note">Cocher OUI / NON pour chaque point.</p>
+          <table class="yesno-table yesno-compact">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>OUI</th>
+                <th>NON</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>L'extérieur du magasin est propre</td>
+                <td><input type="radio" name="tenuExtPropre" value="oui" /></td>
+                <td><input type="radio" name="tenuExtPropre" value="non" /></td>
+              </tr>
+              <tr>
+                <td>Les vitrines/enseignes sont propres</td>
+                <td><input type="radio" name="tenuVitrinesPropre" value="oui" /></td>
+                <td><input type="radio" name="tenuVitrinesPropre" value="non" /></td>
+              </tr>
+              <tr>
+                <td>Le magasin est propre (sol, miroirs)</td>
+                <td><input type="radio" name="tenuMagasinPropre" value="oui" /></td>
+                <td><input type="radio" name="tenuMagasinPropre" value="non" /></td>
+              </tr>
+              <tr>
+                <td>Organisation &amp; propreté des tables de vente</td>
+                <td><input type="radio" name="tenuTables" value="oui" /></td>
+                <td><input type="radio" name="tenuTables" value="non" /></td>
+              </tr>
+              <tr>
+                <td>Organisation &amp; propreté de l'accueil</td>
+                <td><input type="radio" name="tenuAccueil" value="oui" /></td>
+                <td><input type="radio" name="tenuAccueil" value="non" /></td>
+              </tr>
+              <tr>
+                <td>Organisation &amp; propreté de l'atelier</td>
+                <td><input type="radio" name="tenuAtelier" value="oui" /></td>
+                <td><input type="radio" name="tenuAtelier" value="non" /></td>
+              </tr>
+              <tr>
+                <td>Organisation &amp; propreté de la salle de vérification visuelle</td>
+                <td><input type="radio" name="tenuSalleVerif" value="oui" /></td>
+                <td><input type="radio" name="tenuSalleVerif" value="non" /></td>
+              </tr>
+              <tr>
+                <td>Le facing est approvisionné</td>
+                <td><input type="radio" name="tenuFacing" value="oui" /></td>
+                <td><input type="radio" name="tenuFacing" value="non" /></td>
+              </tr>
+              <tr>
+                <td>Le merchandising Contactologie est réalisé et les dates de péremption contrôlées</td>
+                <td><input type="radio" name="tenuContactoMerch" value="oui" /></td>
+                <td><input type="radio" name="tenuContactoMerch" value="non" /></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <label for="tenuComment" class="subsection-title">Commentaire Tenue du magasin</label>
+          <textarea id="tenuComment" name="tenuComment"></textarea>
+
+          <div class="subsection-title">Photos (optionnel)</div>
+          <div class="image-input-group" data-image-field="tenuImages">
+            <div class="image-input-buttons">
+              <button type="button" class="btn-small" data-action="open-gallery">📁 Galerie</button>
+              <button type="button" class="btn-small" data-action="open-camera">📷 Appareil photo</button>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              class="hidden-file-input"
+              data-image-field="tenuImages"
+              data-source="gallery"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              capture="environment"
+              class="hidden-file-input"
+              data-image-field="tenuImages"
+              data-source="camera"
+            />
+            <div class="image-thumbs" data-image-field="tenuImages">
+              <div class="thumb-placeholder">Aucune image pour le moment</div>
+            </div>
+          </div>
+          <div class="note">
+            Photos de la tenue générale du magasin (intérieur, extérieur, linéaires...).
+          </div>
+          <div class="image-paste-zone" data-image-field="tenuImages">
+            Coller une capture d’écran ici (Ctrl+V)
+          </div>
+
+          <div class="rating-row">
+            <div>Appréciation de la Tenue du magasin :</div>
+            <div class="rating-options">
+              <label><input type="radio" name="noteTenu" value="top"> TOP</label>
+              <label><input type="radio" name="noteTenu" value="progres"> Progrès possible</label>
+              <label><input type="radio" name="noteTenu" value="insuffisant"> Insuffisant</label>
+              <label><input type="radio" name="noteTenu" value="mauvais"> Mauvais</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vitrine / Décoration / Travaux -->
+        <div class="card" data-num="9">
+          <h2>Vitrine / Décoration / Travaux </h2>
+          <label for="dateVitrine" class="subsection-title">Date vitrine</label>
+          <input type="date" id="dateVitrine" name="dateVitrine" />
+
+          <label for="vitrineComment" class="subsection-title">Commentaire vitrine</label>
+          <textarea id="vitrineComment" name="vitrineComment"></textarea>
+
+          <div class="subsection-title">Photos vitrines (images)</div>
+          <div class="image-input-group" data-image-field="photosVitrine">
+            <div class="image-input-buttons">
+              <button type="button" class="btn-small" data-action="open-gallery">📁 Galerie</button>
+              <button type="button" class="btn-small" data-action="open-camera">📷 Appareil photo</button>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              class="hidden-file-input"
+              data-image-field="photosVitrine"
+              data-source="gallery"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              capture="environment"
+              class="hidden-file-input"
+              data-image-field="photosVitrine"
+              data-source="camera"
+            />
+            <div class="image-thumbs" data-image-field="photosVitrine">
+              <div class="thumb-placeholder">Aucune image pour le moment</div>
+            </div>
+          </div>
+          <div class="note">
+            Prise de vue des vitrines et mises en avant.
+          </div>
+          <div class="image-paste-zone" data-image-field="photosVitrine">
+            Coller une capture d’écran ici (Ctrl+V)
+          </div>
+
+          <label for="decoComment" class="subsection-title">Décoration</label>
+          <textarea id="decoComment" name="decoComment"></textarea>
+
+          <label for="travauxComment" class="subsection-title">Travaux</label>
+          <textarea id="travauxComment" name="travauxComment"></textarea>
+
+         
+
+          
+        
+        </div>
+
+        <!-- Expérience client -->
+        <div class="card" data-num="10">
+          <h2>Expérience client</h2>
+          <p class="note">Cocher OUI / NON pour chaque point.</p>
+          <table class="yesno-table yesno-compact">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>OUI</th>
+                <th>NON</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Visite de la salle d'examen de vue</td>
+                <td><input type="radio" name="expSalle" value="oui" /></td>
+                <td><input type="radio" name="expSalle" value="non" /></td>
+              </tr>
+              <tr>
+                <td>Explication de la mesure numérique</td>
+                <td><input type="radio" name="expMesure" value="oui" /></td>
+                <td><input type="radio" name="expMesure" value="non" /></td>
+              </tr>
+              <tr>
+                <td>Découverte qualitative de podium</td>
+                <td><input type="radio" name="expPodium" value="oui" /></td>
+                <td><input type="radio" name="expPodium" value="non" /></td>
+              </tr>
+              <tr>
+                <td>Démonstration des lunettes connectées</td>
+                <td><input type="radio" name="expLunettesCo" value="oui" /></td>
+                <td><input type="radio" name="expLunettesCo" value="non" /></td>
+              </tr>
+              <tr>
+                <td>Livraison sur plateau</td>
+                <td><input type="radio" name="expPlateau" value="oui" /></td>
+                <td><input type="radio" name="expPlateau" value="non" /></td>
+              </tr>
+              <tr>
+                <td>Raccompagnement à la porte</td>
+                <td><input type="radio" name="expPorte" value="oui" /></td>
+                <td><input type="radio" name="expPorte" value="non" /></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <label for="expComment" class="subsection-title">Commentaire Expérience client</label>
+          <textarea id="expComment" name="expComment"></textarea>
+
+          <div class="rating-row">
+            <div>Appréciation de l'Expérience client :</div>
+            <div class="rating-options">
+              <label><input type="radio" name="noteExpClient" value="top"> TOP</label>
+              <label><input type="radio" name="noteExpClient" value="progres"> Progrès possible</label>
+              <label><input type="radio" name="noteExpClient" value="insuffisant"> Insuffisant</label>
+              <label><input type="radio" name="noteExpClient" value="mauvais"> Mauvais</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Relation client -->
+        <div class="card" data-num="11">
+          <h2>Relation client</h2>
+          <p class="note">Cocher OUI / NON pour chaque point.</p>
+          <table class="yesno-table yesno-compact">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>OUI</th>
+                <th>NON</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Consentement à la prise de mail et SMS</td>
+                <td><input type="radio" name="relConsent" value="oui" /></td>
+                <td><input type="radio" name="relConsent" value="non" /></td>
+              </tr>
+              <tr>
+                <td>Proposition de la Garantie+</td>
+                <td><input type="radio" name="relGarantie" value="oui" /></td>
+                <td><input type="radio" name="relGarantie" value="non" /></td>
+              </tr>
+              <tr>
+                <td>Rappel suivi et archivé des devis</td>
+                <td><input type="radio" name="relDevis" value="oui" /></td>
+                <td><input type="radio" name="relDevis" value="non" /></td>
+              </tr>
+              <tr>
+                <td>Rappel N-2</td>
+                <td><input type="radio" name="relN2" value="oui" /></td>
+                <td><input type="radio" name="relN2" value="non" /></td>
+              </tr>
+              <tr>
+                <td>Rappel J+15</td>
+                <td><input type="radio" name="relJ15" value="oui" /></td>
+                <td><input type="radio" name="relJ15" value="non" /></td>
+              </tr>
+              <tr>
+                <td>Prise de RDV A+1 lors de la livraison</td>
+                <td><input type="radio" name="relRDV" value="oui" /></td>
+                <td><input type="radio" name="relRDV" value="non" /></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <label for="relComment" class="subsection-title">Commentaire Relation client</label>
+          <textarea id="relComment" name="relComment"></textarea>
+
+          <div class="rating-row">
+            <div>Appréciation de la Relation client :</div>
+            <div class="rating-options">
+              <label><input type="radio" name="noteRelClient" value="top"> TOP</label>
+              <label><input type="radio" name="noteRelClient" value="progres"> Progrès possible</label>
+              <label><input type="radio" name="noteRelClient" value="insuffisant"> Insuffisant</label>
+              <label><input type="radio" name="noteRelClient" value="mauvais"> Mauvais</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conclusion -->
+        <div class="card" data-num="12">
+          <h2>Conclusion & points à travailler</h2>
+          <label for="conclusionComment" class="subsection-title">Conclusion générale</label>
+          <textarea id="conclusionComment" name="conclusionComment"></textarea>
+
+          <label for="note100" class="subsection-title">Note sur 100</label>
+          <input type="number" id="note100" name="note100" min="0" max="100" />
+
+          <label for="commentVisite" class="subsection-title">Commentaire sur la visite</label>
+          <textarea id="commentVisite" name="commentVisite"></textarea>
+        </div>
+
+        <div class="actions-form">
+          <button type="button" class="btn btn-primary" id="btn-save">Sauvegarder manuellement</button>
+          <button type="button" class="btn btn-danger" id="btn-clear">Effacer la visite</button>
+          <span class="note">La saisie (hors photos) est aussi sauvegardée automatiquement.</span>
+        </div>
+      </form>
+    </div>
+
+    <!-- CONTENEUR VISUALISATION -->
+    <div id="preview-container" style="display:none;"></div>
+  </main>
+
+  <script>
+    const MAGASIN_OUTILS_2_0 = {
+      "PERIGUEUX":   ["META", "NUANCE", "VISIOFICE X", "OOMADE", "E REPUTATION"],
+      "ST YRIEIX":   ["META", "VISIOFICE X", "OOMADE", "E REPUTATION"],
+      "ST ASTIER":   ["META", "NUANCE", "VISIOFICE X", "OOMADE", "E REPUTATION"],
+      "RIBERAC 1":   ["E REPUTATION"],
+      "MONTAUBAN 2":["E REPUTATION"],
+      "LA ROCHEFOUCAULD": ["LYLEOO", "OOMADE", "E REPUTATION"],
+      "TRELISSAC":  ["META", "E REPUTATION"],
+      "RIBERAC 2":  ["META", "VISIOFICE X", "OOMADE", "E REPUTATION"],
+      "NONTRON":     ["META", "LYLEOO", "VISIOFICE X", "OOMADE", "E REPUTATION"],
+      "MONTPON":     ["META", "LYLEOO", "VISIOFICE X", "OOMADE", "E REPUTATION"],
+      "LE BUGUE":    ["META", "OOMADE", "E REPUTATION"],
+      "CREATEUR PX": ["E REPUTATION"],
+      "GLANDON":     ["VISIOFICE X", "E REPUTATION"],
+      "EXCIDEUIL":   ["LYLEOO", "E REPUTATION"],
+      "VILLEREAL":   ["META", "LYLEOO", "OOMADE", "E REPUTATION"],
+      "BRANTOME":    ["META", "VISIOFICE X", "OOMADE", "E REPUTATION"],
+      "BELVES":      ["E REPUTATION"],
+      "BOULAZAC":    ["META", "NUANCE", "VISIOFICE X", "OOMADE", "E REPUTATION"],
+      "RIBERAC 3":   ["META", "VISIOFICE X", "OOMADE", "E REPUTATION"],
+      "ST SEURIN":   ["META", "LYLEOO", "VISIOFICE X", "OOMADE", "E REPUTATION"],
+      "BERGERAC":    ["META", "LYLEOO", "VISIOFICE X", "OOMADE", "E REPUTATION"],
+      "ST CYPRIEN":  ["LYLEOO", "E REPUTATION"],
+      "THIVIERS":    ["META", "LYLEOO", "OOMADE", "E REPUTATION"],
+      "MONTBRON":    ["LYLEOO", "E REPUTATION"],
+      "ST AIGULIN":  ["LYLEOO", "E REPUTATION"],
+      "SOUILLAC":    ["META", "LYLEOO", "VISIOFICE X", "OOMADE", "E REPUTATION"],
+      "MONTIGNAC":   ["LYLEOO", "E REPUTATION"],
+      "SOUILLAC 2":  ["E REPUTATION"],
+      "HAUTEFORT":   ["LYLEOO", "E REPUTATION"],
+      "PRIGONRIEUX": ["LYLEOO", "OOMADE", "E REPUTATION"],
+      "CASTILLONNES":["LYLEOO", "E REPUTATION"],
+      "O2000 MARSAC":["META", "VISIOFICE X", "OOMADE", "E REPUTATION"],
+      "O2000 PERIGUEUX":["META", "VISIOFICE X", "E REPUTATION"],
+      "GO BERGERAC": ["META", "NUANCE", "LYLEOO", "OOMADE", "E REPUTATION"],
+      "GO BRETENOUX":["META", "NUANCE", "E REPUTATION"],
+      "GO TULLE":    ["META", "NUANCE", "E REPUTATION"]
+    };
+
+    const STORAGE_KEY = "CR_APP_SAISIE_V1";
+
+    const imageStore = {};
+    let currentPasteField = null;
+
+    /* HTML du logo en bas à droite des slides */
+    const SLIDE_LOGO_HTML = `
+      <div class="slide-logo">
+        <svg id="Calque_1" data-name="Calque 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 327.13 117.03">
+          <defs>
+            <style>
+              .cls-1 { fill: #1b171b; stroke-width: 0px; }
+              .cls-2 { stroke-width: 0px; }
+            </style>
+          </defs>
+          <g>
+            <path class="cls-1" d="m2.86,2.46v6.06h7.49v2.46H2.86v10.57H.18V0h10.43v2.46H2.86Z"/>
+            <path class="cls-1" d="m18.81,10.35h.09c.63-1.57,1.94-2.57,3.66-2.57.74,0,1.49.26,2.11.66l-1.17,2.34c-.46-.4-.97-.54-1.57-.54-2.77,0-3.12,2.57-3.12,4.74v6.57h-2.57v-13.38h2.57v2.17Z"/>
+            <path class="cls-1" d="m41.24,21.55h-2.57v-2.09h-.06c-1.03,1.51-2.63,2.54-4.54,2.54-4.09,0-6.4-3.4-6.4-7.23s2.43-7,6.32-7c1.97,0,3.57,1.03,4.63,2.63h.06v-2.23h2.57v13.38Zm-2.43-6.69c0-2.6-1.57-4.8-4.34-4.8s-4.23,2.31-4.23,4.8,1.51,4.86,4.23,4.86,4.34-2.23,4.34-4.86Z"/>
+            <path class="cls-1" d="m49.76,9.97h.06c.8-1.43,2.4-2.2,4.03-2.2,3.77,0,4.74,2.54,4.74,5.8v7.97h-2.57v-7.66c0-2.29-.31-3.83-2.94-3.83-3.31,0-3.31,2.92-3.31,5.34v6.14h-2.57v-13.38h2.57v1.8Z"/>
+            <path class="cls-1" d="m74.57,11.98c-1.03-1.17-2.29-1.8-3.83-1.8-2.52,0-4.46,2.23-4.46,4.69,0,2.74,1.91,4.74,4.63,4.74,1.49,0,2.69-.69,3.66-1.77v3.29c-1.17.63-2.34.89-3.69.89-3.94,0-7.17-3.03-7.17-7.03s3.2-7.2,7.32-7.2c1.2,0,2.52.29,3.54.89v3.32Zm-5.53,13.5l-1.52-.77,1.74-3.54,2.03.83-2.25,3.48Z"/>
+            <path class="cls-1" d="m93.03,14.89c0,4.03-3.14,7.12-7.14,7.12s-7.14-3.09-7.14-7.12,3.14-7.12,7.14-7.12,7.14,3.09,7.14,7.12Zm-11.72,0c0,2.52,2.03,4.66,4.57,4.66s4.57-2.14,4.57-4.66-2.03-4.66-4.57-4.66-4.57,2.11-4.57,4.66Z"/>
+            <path class="cls-1" d="m101.6,2.06c0,.97-.8,1.74-1.77,1.74s-1.77-.77-1.77-1.74.8-1.8,1.77-1.8,1.77.8,1.77,1.8Zm-.49,19.49h-2.57v-13.38h2.57v13.38Z"/>
+            <path class="cls-1" d="m113.2,11.23c-.31-.66-.97-1.17-1.71-1.17s-1.4.57-1.4,1.31c0,1.17,1.54,1.69,3.12,2.4,1.57.71,3.09,1.69,3.09,3.8,0,2.54-2.11,4.43-4.6,4.43-1.94,0-3.92-1.11-4.63-3l2.2-1c.54,1,1.2,1.71,2.43,1.71,1.09,0,2.03-.74,2.03-1.89,0-.71-.34-1.06-.94-1.46l-2.52-1.34c-1.49-.8-2.57-1.54-2.57-3.37,0-2.17,1.77-3.89,3.94-3.89,1.63,0,2.94.89,3.66,2.34l-2.09,1.11Z"/>
+          </g>
+          <g>
+            <path class="cls-1" d="m11.73,110.34c0,3.54-2.66,6.35-5.87,6.35s-5.87-2.81-5.87-6.35,2.66-6.38,5.87-6.38,5.87,2.86,5.87,6.38Zm-10.48-.02c0,2.77,2.06,5.09,4.61,5.09s4.61-2.32,4.61-5.09-2.03-5.09-4.61-5.09-4.61,2.3-4.61,5.09Z"/>
+            <path class="cls-1" d="m52.28,116.47h-1.25v-12.31h1.85c.97,0,1.97.03,2.79.65.84.64,1.27,1.71,1.27,2.81,0,1-.37,2.01-1.08,2.64-.76.69-1.73.82-2.67.82h-.91v5.39Zm0-6.66h.84c1.39,0,2.57-.46,2.57-2.22,0-2.01-1.48-2.15-2.94-2.15h-.46v4.37Z"/>
+            <path class="cls-1" d="m99.12,116.47h-1.25v-11.04h-2.72v-1.27h6.72v1.27h-2.75v11.04Z"/>
+            <path class="cls-1" d="m142.04,116.47h-1.25v-12.31h1.25v12.31Z"/>
+            <path class="cls-1" d="m190.5,106.86c-.9-1.01-2.13-1.63-3.43-1.63-2.51,0-4.54,2.38-4.54,5.09s2.04,5.09,4.57,5.09c1.27,0,2.51-.65,3.4-1.63v1.7c-.97.77-2.16,1.21-3.36,1.21-3.18,0-5.87-2.82-5.87-6.32s2.64-6.41,5.87-6.41c1.25,0,2.36.39,3.36,1.21v1.7Z"/>
+            <path class="cls-1" d="m231.5,116.47h-1.25v-12.31h1.25v12.31Z"/>
+            <path class="cls-1" d="m271.39,104.16h5.84v1.27h-4.58v3.66h4.45v1.27h-4.45v4.83h4.58v1.27h-5.84v-12.31Z"/>
+            <path class="cls-1" d="m317.03,103.64l8.78,10.06v-9.53h1.25v12.86l-8.78-10.04v9.48h-1.25v-12.83Z"/>
+          </g>
+          <g>
+            <path class="cls-2" d="m8.96,86.47h25.71v8.15H.05V23.14h8.91v63.33Z"/>
+            <path class="cls-2" d="m46.69,76.71l-8.15,17.92h-9.58L63.09,20.11l34.13,74.52h-9.58l-8.15-17.92h-32.8Zm16.4-37.07l-12.7,28.91h25.41l-12.7-28.91Z"/>
+            <path class="cls-2" d="m153.24,36.79c-5.12-4.55-12.13-7.02-18.87-7.02-16.02,0-28.25,13.37-28.25,29.2s12.13,29.01,28.06,29.01c7.02,0,13.75-2.65,19.05-7.39v10.52c-5.5,3.22-12.51,5.02-18.77,5.02-20.38,0-37.26-16.21-37.26-36.88s16.97-37.64,38.02-37.64c6.26,0,12.61,1.52,18.01,4.83v10.33Z"/>
+            <path class="cls-2" d="m208.05,51.96v-28.82h8.91v71.48h-8.91v-34.32h-34.03v34.32h-8.91V23.14h8.91v28.82h34.03Z"/>
+            <path class="cls-2" d="m240,76.71l-8.15,17.92h-9.58l34.13-74.52,34.13,74.52h-9.58l-8.15-17.92h-32.8Zm16.4-37.07l-12.7,28.91h25.41l-12.7-28.91Z"/>
+            <path class="cls-2" d="m305.42,86.47h21.71v8.15h-30.62V23.14h8.91v63.33Z"/>
+          </g>
+        </svg>
+      </div>
+    `;
+
+    /* === SAISIE / SAUVEGARDE FORMULAIRE (hors images) ===================== */
+
+    function serializeForm() {
+      const form = document.getElementById("cr-form");
+      const data = {};
+      const elements = form.elements;
+
+      for (let i = 0; i < elements.length; i++) {
+        const el = elements[i];
+        if (!el.name) continue;
+        if (el.type === "file") continue; // on ne stocke jamais les fichiers
+        if (el.type === "radio" || el.type === "checkbox") {
+          if (!el.checked) continue;
+          data[el.name] = el.value;
+        } else {
+          data[el.name] = el.value;
+        }
+      }
+      return data;
+    }
+
+    function saveForm() {
+      try {
+        const data = serializeForm();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (e) {
+        console.warn("Impossible de sauvegarder:", e);
+      }
+    }
+
+    function loadForm() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        const form = document.getElementById("cr-form");
+
+        Object.entries(data).forEach(([name, value]) => {
+          const els = form.elements[name];
+          if (!els) return;
+
+          if (els.length && els[0].type === "radio") {
+            Array.from(els).forEach(radio => {
+              radio.checked = radio.value === value;
+              radio.wasChecked = radio.checked;
+            });
+          } else {
+            els.value = value;
+          }
+        });
+      } catch (e) {
+        console.warn("Impossible de charger:", e);
+      }
+    }
+
+    /* === OUTILS 2.0 AUTOMATIQUES ========================================== */
+
+    function appliquerOutilsPourMagasin() {
+      const select = document.getElementById("magasin");
+      if (!select) return;
+
+      const magasin = select.value;
+      const outils = MAGASIN_OUTILS_2_0[magasin] || [];
+
+      const defs = [
+        { outil: "META",        presentName: "metaPresent" },
+        { outil: "NUANCE",      presentName: "nuancePresent" },
+        { outil: "LYLEOO",      presentName: "lyleooPresent" },
+        { outil: "VISIOFICE X", presentName: "visioPresent" },
+        { outil: "OOMADE",      presentName: "oomadePresent" },
+        { outil: "E REPUTATION",presentName: "erepPresent" }
+      ];
+
+      defs.forEach(def => {
+        const presentOui = document.querySelector(`input[name="${def.presentName}"][value="oui"]`);
+        const presentNon = document.querySelector(`input[name="${def.presentName}"][value="non"]`);
+        if (!presentOui || !presentNon) return;
+
+        const hasTool = outils.includes(def.outil);
+        presentOui.checked = hasTool;
+        presentNon.checked = !hasTool;
+        presentOui.wasChecked = hasTool;
+        presentNon.wasChecked = !hasTool;
+      });
+
+      saveForm();
+    }
+
+    /* === UTILITAIRES D'AFFICHAGE ========================================== */
+
+    function safeValue(obj, key, fallback = "") {
+      const v = obj && obj[key];
+      return (v === undefined || v === null || v === "") ? fallback : v;
+    }
+
+    function formatOuiNon(val) {
+      if (val === "oui") return "Oui";
+      if (val === "non") return "Non";
+      return "Non relevé";
+    }
+
+    function pillForAppreciation(val) {
+  switch (val) {
+    case "top":
+      return '<span class="pill green">TOP</span>';
+    case "progres":
+      return '<span class="pill lightgreen">Progrès possible</span>';
+    case "insuffisant":
+      return '<span class="pill orange">Insuffisant</span>';
+    case "mauvais":
+      return '<span class="pill red">Mauvais</span>';
+    default:
+      return '<span class="pill">Non noté</span>';
+  }
+}
+
+    function buildGauge(noteRaw) {
+      const n = parseFloat(noteRaw);
+      if (isNaN(n)) {
+        return '<div class="muted">(note non renseignée)</div>';
+      }
+      const clamped = Math.max(0, Math.min(100, n));
+      const angle = (clamped / 100) * 180 - 90;
+
+      return `
+        <div class="gauge">
+          <div class="gauge-arc">
+            <svg viewBox="0 0 100 50" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <linearGradient id="gaugeGradient" x1="0%" y1="100%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ef4444" />
+                  <stop offset="50%" stop-color="#facc15" />
+                  <stop offset="100%" stop-color="#22c55e" />
+                </linearGradient>
+              </defs>
+              <path d="M5,50 A45,45 0 0 1 95,50"
+                    stroke="url(#gaugeGradient)"
+                    stroke-width="10"
+                    fill="none"
+                    stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="gauge-needle" style="transform: translate(-50%, 0) rotate(${angle}deg);"></div>
+          <div class="gauge-center">
+            <div class="gauge-value">${clamped}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* === GESTION DES IMAGES (galerie / appareil photo / collage) ========= */
+
+    function getImagesForField(fieldName) {
+      return imageStore[fieldName] || [];
+    }
+
+    function renderThumbs(fieldName) {
+      const container = document.querySelector(`.image-thumbs[data-image-field="${fieldName}"]`);
+      if (!container) return;
+
+      const urls = getImagesForField(fieldName);
+
+      if (!urls.length) {
+        container.innerHTML = '<div class="thumb-placeholder">Aucune image pour le moment</div>';
+        return;
+      }
+
+      container.innerHTML = urls.map((url, idx) => `
+        <div class="thumb">
+          <img src="${url}" alt="Image ${idx + 1} - ${fieldName}" />
+          <button type="button"
+                  class="thumb-remove"
+                  title="Supprimer cette image"
+                  data-field="${fieldName}"
+                  data-index="${idx}">✕</button>
+        </div>
+      `).join("");
+    }
+
+    function updatePasteZoneStatus(fieldName) {
+      const zone = document.querySelector(`.image-paste-zone[data-image-field="${fieldName}"]`);
+      if (!zone) return;
+
+      if (!zone.dataset.originalText) {
+        zone.dataset.originalText = zone.textContent.trim();
+      }
+
+      const count = (imageStore[fieldName] || []).length;
+
+      if (count > 0) {
+        const pluriel = count > 1 ? "s" : "";
+        zone.textContent = `✅ ${count} image${pluriel} associée${pluriel === "s" ? "s" : ""}`;
+        zone.classList.add("image-paste-zone-success");
+      } else {
+        zone.textContent = zone.dataset.originalText;
+        zone.classList.remove("image-paste-zone-success");
+      }
+    }
+
+    function addFilesToField(fieldName, fileList, replace = false) {
+      if (!imageStore[fieldName] || replace) {
+        imageStore[fieldName] = [];
+      }
+      if (fileList) {
+        Array.from(fileList).forEach(file => {
+          const url = URL.createObjectURL(file);
+          imageStore[fieldName].push(url);
+        });
+      }
+      renderThumbs(fieldName);
+      updatePasteZoneStatus(fieldName);
+    }
+
+    function addPastedFileToField(fieldName, file) {
+      if (!file) return;
+      if (!imageStore[fieldName]) imageStore[fieldName] = [];
+      const url = URL.createObjectURL(file);
+      imageStore[fieldName].push(url);
+      renderThumbs(fieldName);
+      updatePasteZoneStatus(fieldName);
+    }
+
+    function buildImageGrid(fieldName, singleCover = false) {
+      const urls = getImagesForField(fieldName);
+      if (!urls.length) {
+        return '<div class="muted">(aucune image)</div>';
+      }
+      const cls = singleCover ? "photo-cover" : "photo-grid";
+      const imgs = urls.map((url, idx) =>
+        `<img src="${url}" alt="Image ${idx + 1} - ${fieldName}" />`
+      ).join("");
+      return `<div class="${cls}">${imgs}</div>`;
+    }
+
+    function initImageInputs() {
+      const groups = document.querySelectorAll('.image-input-group[data-image-field]');
+      groups.forEach(group => {
+        const fieldName = group.dataset.imageField;
+        const galleryBtn = group.querySelector('.btn-small[data-action="open-gallery"]');
+        const cameraBtn  = group.querySelector('.btn-small[data-action="open-camera"]');
+        const galleryInput = group.querySelector('input[type="file"][data-source="gallery"]');
+        const cameraInput  = group.querySelector('input[type="file"][data-source="camera"]');
+
+        if (galleryBtn && galleryInput) {
+          galleryBtn.addEventListener("click", () => galleryInput.click());
+          galleryInput.addEventListener("change", () => {
+            if (galleryInput.files && galleryInput.files.length) {
+              addFilesToField(fieldName, galleryInput.files, false); // on ajoute
+              galleryInput.value = "";
+            }
+          });
+        }
+
+        if (cameraBtn && cameraInput) {
+          cameraBtn.addEventListener("click", () => cameraInput.click());
+          cameraInput.addEventListener("change", () => {
+            if (cameraInput.files && cameraInput.files.length) {
+              addFilesToField(fieldName, cameraInput.files, false); // on ajoute aussi
+              cameraInput.value = "";
+            }
+          });
+        }
+      });
+
+      // Suppression d'une vignette via la petite croix
+      document.addEventListener("click", (e) => {
+        const btn = e.target.closest(".thumb-remove");
+        if (!btn) return;
+        const fieldName = btn.dataset.field;
+        const index = parseInt(btn.dataset.index, 10);
+        if (!fieldName || isNaN(index)) return;
+
+        if (imageStore[fieldName]) {
+          imageStore[fieldName].splice(index, 1);
+          renderThumbs(fieldName);
+          updatePasteZoneStatus(fieldName);
+        }
+      });
+    }
+
+    function initPasteZones() {
+      const pasteZones = document.querySelectorAll('.image-paste-zone[data-image-field]');
+      pasteZones.forEach(zone => {
+        const fieldName = zone.dataset.imageField;
+
+        zone.setAttribute("tabindex", "0");
+
+        const activateZone = () => {
+          currentPasteField = fieldName;
+
+          if (!zone.dataset.originalText) {
+            zone.dataset.originalText = zone.textContent.trim();
+          }
+
+          document.querySelectorAll(".image-paste-zone").forEach(z => {
+            z.classList.remove("active-paste-zone");
+          });
+          zone.classList.add("active-paste-zone");
+        };
+
+        zone.addEventListener("click", activateZone);
+        zone.addEventListener("focus", activateZone);
+      });
+    }
+
+    // Collage global (Ctrl+V) d’images dans la zone active
+    document.addEventListener("paste", (event) => {
+      if (!currentPasteField) return;
+
+      const items = event.clipboardData?.items || [];
+      let foundImage = false;
+
+      for (const item of items) {
+        if (item.type && item.type.startsWith("image/")) {
+          const file = item.getAsFile();
+          if (!file) continue;
+          foundImage = true;
+          addPastedFileToField(currentPasteField, file);
+        }
+      }
+
+      if (!foundImage) {
+        console.warn("Aucune image trouvée dans le presse-papiers.");
+      }
+    });
+
+    /* === CONSTRUCTION DES SLIDES DE VISUALISATION ========================= */
+
+    function buildPreview() {
+      const data = serializeForm();
+      const content = document.getElementById("preview-container");
+
+      const magasin = safeValue(data, "magasin", "Magasin non renseigné");
+      const dateVisite = safeValue(data, "dateVisite", "");
+      const personnes = [];
+      for (let i = 1; i <= 8; i++) {
+        const v = safeValue(data, "p" + i, "").trim();
+        if (v) personnes.push(v);
+      }
+
+      /* SLIDE COUVERTURE (SYNTHÈSE) */
+      const slideCouverture = `
+        <section class="slide">
+          <div class="cover-layout">
+            <div>
+              <h2 class="slide-title slide-title-main">Synthèse de visite</h2>
+              <div class="cover-magasin">${magasin}</div>
+              ${dateVisite ? `<div class="cover-date">${dateVisite}</div>` : ""}
+              <div class="label">Participants</div>
+              <div class="value">
+                ${personnes.length ? personnes.join(" · ") : "<span class='muted'>Non renseignés</span>"}
+              </div>
+
+              <div style="margin-top:1rem;">
+                <div class="label">Conclusion générale</div>
+                <div class="value">${safeValue(data, "conclusionComment", "(aucune conclusion renseignée)")}</div>
+              </div>
+
+              <div style="margin-top:1.2rem;">
+                <div class="label">Synthèse des appréciations par thème</div>
+                <table class="table cover-theme-table" style="margin-top:0.4rem;">
+                  <tbody>
+                    <tr>
+                      <td>Résultats commerciaux</td>
+                      <td>${pillForAppreciation(safeValue(data, "noteBusiness", ""))}</td>
+                    </tr>
+                    <tr>
+                      <td>2.0</td>
+                      <td>${pillForAppreciation(safeValue(data, "note2_0", ""))}</td>
+                    </tr>
+                    <tr>
+					<td>Garantie</td>
+                      <td>${pillForAppreciation(safeValue(data, "noteGarantie", ""))}</td>
+                    </tr>
+                    <tr>
+                      <td>Challenge &amp; RBA</td>
+                      <td>${pillForAppreciation(safeValue(data, "noteChallenge", ""))}</td>
+                    </tr>
+                    <tr>
+                      <td>Tenue du magasin</td>
+                      <td>${pillForAppreciation(safeValue(data, "noteTenu", ""))}</td>
+                    </tr>
+                    <tr>
+                      <td>Gestion administrative</td>
+                      <td>${pillForAppreciation(safeValue(data, "noteGestion", ""))}</td>
+                    </tr>
+                    <tr>
+                      <td>Contactologie</td>
+                      <td>${pillForAppreciation(safeValue(data, "noteContacto", ""))}</td>
+                    </tr>
+                    <tr>
+                      <td>Expérience client</td>
+                      <td>${pillForAppreciation(safeValue(data, "noteExpClient", ""))}</td>
+                    </tr>
+                    <tr>
+                      <td>Relation client</td>
+                      <td>${pillForAppreciation(safeValue(data, "noteRelClient", ""))}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div style="text-align:center;">
+              <div class="label">Photo de couverture</div>
+              ${buildImageGrid("photoCouverture", true)}
+              <div style="margin-top:1rem;">
+                <div class="label">Note sur 100</div>
+                ${buildGauge(safeValue(data, "note100", ""))}
+                <div class="muted" style="margin-top:0.3rem;">Appréciation globale</div>
+                <div style="margin-top:1rem;">
+                  <div class="label">Commentaire sur la visite</div>
+                  <div class="value">${safeValue(data, "commentVisite", "(aucun commentaire)")}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          ${SLIDE_LOGO_HTML}
+        </section>
+      `;
+
+      /* 1 - CA DU MAGASIN */
+      const slideCA = `
+        <section class="slide" data-slide-num="1">
+          <h2 class="slide-title">CA du magasin</h2>
+          <div class="cover-layout">
+            <div>
+              <div class="label">C.A. réalisé (€)</div>
+              <div class="value">${safeValue(data, "caRealise", "-")}</div>
+
+              <div class="label" style="margin-top:0.4rem;">Écart en valeur (€)</div>
+              <div class="value">${safeValue(data, "ecartValeur", "-")}</div>
+
+              <div class="label" style="margin-top:0.4rem;">Écart en %</div>
+              <div class="value">${safeValue(data, "ecartPourcent", "-")}</div>
+
+              <div style="margin-top:0.8rem;">
+                <div class="label">Commentaire CA</div>
+                <div class="value">${safeValue(data, "caCommentaire", "(aucun commentaire)")}</div>
+              </div>
+            </div>
+            <div>
+              <div class="label">Visuels CA</div>
+              ${buildImageGrid("caImages")}
+            </div>
+          </div>
+          ${SLIDE_LOGO_HTML}
+        </section>
+      `;
+
+      /* 2 - BUSINESS */
+      const slideBusiness = `
+        <section class="slide" data-slide-num="2">
+          <h2 class="slide-title">Résultats commerciaux / Business</h2>
+          <div class="cover-layout">
+            <div>
+              <div class="label">Forces</div>
+              <div class="value">${safeValue(data, "resForces", "(non renseigné)")}</div>
+
+              <div class="label" style="margin-top:0.6rem;">Faiblesses</div>
+              <div class="value">${safeValue(data, "resFaiblesses", "(non renseigné)")}</div>
+
+              <div style="margin-top:0.8rem;">
+                <div class="label">Commentaire Business</div>
+                <div class="value">${safeValue(data, "resCommentaire", "(aucun commentaire)")}</div>
+              </div>
+
+              <div style="margin-top:0.8rem;">
+                <div class="label">Appréciation</div>
+                <div class="value">${pillForAppreciation(safeValue(data, "noteBusiness", ""))}</div>
+              </div>
+            </div>
+            <div>
+              <div class="label">Synthèse visuelle</div>
+              ${buildImageGrid("imgSynthese")}
+              <div class="label" style="margin-top:0.6rem;">Volume</div>
+              ${buildImageGrid("imgVolume")}
+              <div class="label" style="margin-top:0.6rem;">Verres</div>
+              ${buildImageGrid("imgVerres")}
+            </div>
+          </div>
+          ${SLIDE_LOGO_HTML}
+        </section>
+      `;
+
+      
+       /* 3 - 2.0 */
+      const outils = [
+        { label: "META",        present: "metaPresent",   actif: "metaActif",   score: "metaScore" },
+        { label: "NUANCE",      present: "nuancePresent", actif: "nuanceActif", score: "nuanceScore" },
+        { label: "LYLEOO",      present: "lyleooPresent", actif: "lyleooActif", score: "lyleooScore" },
+        { label: "VISIOFICE X", present: "visioPresent",  actif: "visioActif",  score: "visioScore" },
+        { label: "OOMADE",      present: "oomadePresent", actif: "oomadeActif", score: "oomadeScore" },
+        { label: "E REPUTATION",present: "erepPresent",   actif: "erepActif",   score: "erepScore" },
+      ];
+      let rows2_0 = "";
+      outils.forEach(o => {
+        const present = safeValue(data, o.present, "");
+        const actif = safeValue(data, o.actif, "");
+        rows2_0 += `
+          <tr>
+            <td>${o.label}</td>
+            <td>${formatOuiNon(present)}</td>
+            <td>${formatOuiNon(actif)}</td>
+            <td>${safeValue(data, o.score, "")}</td>
+          </tr>
+        `;
+      });
+
+      const slide2_0 = `
+        <section class="slide" data-slide-num="3">
+          <h2 class="slide-title">2.0</h2>
+          <p class="slide-subtitle">Présence et activité des outils 2.0.</p>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Outil</th>
+                <th>Présent</th>
+                <th>Actif</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows2_0}
+            </tbody>
+          </table>
+
+          <div style="margin-top:0.8rem;">
+            <div class="label">Commentaire 2.0</div>
+            <div class="value">${safeValue(data, "comment2_0", "(aucun commentaire)")}</div>
+          </div>
+
+          <div style="margin-top:0.8rem;">
+            <div class="label">Appréciation</div>
+            <div class="value">${pillForAppreciation(safeValue(data, "note2_0", ""))}</div>
+          </div>
+          ${SLIDE_LOGO_HTML}
+        </section>
+      `;
+
+        /* 4 - GARANTIE */
+const slideGarantie = `
+  <section class="slide" data-slide-num="4">
+    <h2 class="slide-title">Garantie</h2>
+    <div class="cover-layout">
+      <div>
+        <div class="label">Taux de proposition</div>
+        <div class="value">${safeValue(data, "garantieTaux", "-")}</div>
+
+        <div class="label" style="margin-top:0.6rem;">Commentaire Garantie</div>
+        <div class="value">${safeValue(data, "garantieComment", "(aucun commentaire)")}</div>
+
+        <div class="label" style="margin-top:0.8rem;">Appréciation</div>
+        <div class="value">${pillForAppreciation(safeValue(data, "noteGarantie", ""))}</div>
+      </div>
+      <div>
+        <div class="label">Visuels Garantie</div>
+        ${buildImageGrid("garantieImages")}
+      </div>
+    </div>
+    ${SLIDE_LOGO_HTML}
+  </section>
+`;
+
+;
+
+      /* 5 - CHALLENGE & RBA */
+      const slideChallenge = `
+        <section class="slide" data-slide-num="5">
+          <h2 class="slide-title">Challenge &amp; RBA</h2>
+          <div class="cover-layout">
+            <div>
+              <div class="label">RBA</div>
+              <div class="value">${safeValue(data, "rba", "(non renseigné)")}</div>
+              <div class="label" style="margin-top:0.4rem;">Nombre</div>
+              <div class="value">${safeValue(data, "rbaNbre", "-")}</div>
+              <div class="label" style="margin-top:0.4rem;">Évolution</div>
+              <div class="value">${safeValue(data, "rbaEvol", "(non renseigné)")}</div>
+            </div>
+            <div>
+              <div class="label">Les challenges</div>
+              <div class="value">${safeValue(data, "lesChallenges", "(non renseigné)")}</div>
+              <div class="label" style="margin-top:0.6rem;">Commentaire Challenge &amp; RBA</div>
+              <div class="value">${safeValue(data, "commentChallenge", "(aucun commentaire)")}</div>
+              <div class="label" style="margin-top:0.8rem;">Appréciation</div>
+              <div class="value">${pillForAppreciation(safeValue(data, "noteChallenge", ""))}</div>
+            </div>
+          </div>
+          ${SLIDE_LOGO_HTML}
+        </section>
+      `;
+
+      /* 6 - MARKETING / OPS / OPHTALMOS / CE */
+      const slideMarketing = `
+        <section class="slide" data-slide-num="6">
+          <h2 class="slide-title">Marketing / Opérations / Ophtalmos / CE</h2>
+          <div class="cover-layout">
+            <div>
+              <div class="label">Opération en cours</div>
+              <div class="value">${safeValue(data, "opEnCours", "(non renseigné)")}</div>
+              <div class="label" style="margin-top:0.6rem;">Ophtalmos</div>
+              <div class="value">${safeValue(data, "ophtalmos", "(non renseigné)")}</div>
+            </div>
+            <div>
+              <div class="label">Comités d'entreprises</div>
+              <div class="value">${safeValue(data, "comites", "(non renseigné)")}</div>
+            </div>
+          </div>
+          ${SLIDE_LOGO_HTML}
+        </section>
+      `;
+
+      /* 7 - GESTION ADMINISTRATIVE */
+      const slideCAAdmin = `
+        <section class="slide" data-slide-num="7">
+          <h2 class="slide-title">Gestion administrative</h2>
+          <div class="cover-layout">
+            <div>
+              <div class="label">Dû clients – Quantité</div>
+              <div class="value">${safeValue(data, "duQuantite", "-")}</div>
+              <div class="label" style="margin-top:0.4rem;">Dû clients – Montant</div>
+              <div class="value">${safeValue(data, "duMontant", "-")}</div>
+              <div class="label" style="margin-top:0.4rem;">Commentaire Dû clients</div>
+              <div class="value">${safeValue(data, "duCommentaire", "(aucun commentaire)")}</div>
+
+              <div class="label" style="margin-top:0.8rem;">Encours TP – Quantité</div>
+              <div class="value">${safeValue(data, "tpQuantite", "-")}</div>
+              <div class="label" style="margin-top:0.4rem;">Encours TP – Montant</div>
+              <div class="value">${safeValue(data, "tpMontant", "-")}</div>
+              <div class="label" style="margin-top:0.4rem;">Commentaire TP</div>
+              <div class="value">${safeValue(data, "tpCommentaire", "(aucun commentaire)")}</div>
+            </div>
+            <div>
+              <div class="label">Photo Dû clients</div>
+              ${buildImageGrid("duImage")}
+              <div class="label" style="margin-top:0.6rem;">Photo TP</div>
+              ${buildImageGrid("tpImage")}
+              <div class="label" style="margin-top:0.6rem;">Zeendoc</div>
+              <div class="value">${safeValue(data, "zeendoc", "(non renseigné)")}</div>
+              <div class="label" style="margin-top:0.4rem;">Certification</div>
+              <div class="value">${safeValue(data, "certif", "(non renseigné)")}</div>
+              <div style="margin-top:0.8rem;">
+                <div class="label">Appréciation gestion</div>
+                <div class="value">${pillForAppreciation(safeValue(data, "noteGestion", ""))}</div>
+              </div>
+              <div style="margin-top:0.6rem;">
+                <div class="label">Commentaire global Gestion</div>
+                <div class="value">${safeValue(data, "commentGestion", "(aucun commentaire)")}</div>
+              </div>
+            </div>
+          </div>
+          ${SLIDE_LOGO_HTML}
+        </section>
+      `;
+
+      /* 8 - CONTACTOLOGIE */
+      const slideContactologie = `
+        <section class="slide" data-slide-num="8">
+          <h2 class="slide-title">Contactologie</h2>
+          <div class="cover-layout">
+            <div>
+              <div class="label">Contactologie</div>
+              <div class="value">${safeValue(data, "contactologie", "(non renseigné)")}</div>
+              <div class="label" style="margin-top:0.6rem;">Appréciation contactologie</div>
+              <div class="value">${pillForAppreciation(safeValue(data, "noteContacto", ""))}</div>
+              <div class="label" style="margin-top:0.6rem;">Visuels contactologie</div>
+              ${buildImageGrid("contactologieImages")}
+            </div>
+            <div>
+              <div class="label">Montures et accessoires</div>
+              <div class="value">${safeValue(data, "montures", "(non renseigné)")}</div>
+              <div class="label" style="margin-top:0.6rem;">Divers</div>
+              <div class="value">${safeValue(data, "divers", "(non renseigné)")}</div>
+              <div class="label" style="margin-top:0.6rem;">Astronomie</div>
+              <div class="value">${safeValue(data, "astro", "(non renseigné)")}</div>
+            </div>
+          </div>
+          ${SLIDE_LOGO_HTML}
+        </section>
+      `;
+
+      /* 9 - TENUE DU MAGASIN */
+      const slideTenu = `
+        <section class="slide" data-slide-num="9">
+          <h2 class="slide-title">Tenue du magasin</h2>
+          <div class="cover-layout">
+            <div>
+              <div class="label">Éléments observés</div>
+              <div class="value">
+                <ul class="exp-list">
+                  <li>Extérieur propre : <span class="exp-value">${formatOuiNon(safeValue(data, "tenuExtPropre"))}</span></li>
+                  <li>Vitrines / enseignes propres : <span class="exp-value">${formatOuiNon(safeValue(data, "tenuVitrinesPropre"))}</span></li>
+                  <li>Magasin propre (sol, miroirs) : <span class="exp-value">${formatOuiNon(safeValue(data, "tenuMagasinPropre"))}</span></li>
+                  <li>Organisation &amp; propreté tables de vente : <span class="exp-value">${formatOuiNon(safeValue(data, "tenuTables"))}</span></li>
+                  <li>Organisation &amp; propreté accueil : <span class="exp-value">${formatOuiNon(safeValue(data, "tenuAccueil"))}</span></li>
+                  <li>Organisation &amp; propreté atelier : <span class="exp-value">${formatOuiNon(safeValue(data, "tenuAtelier"))}</span></li>
+                  <li>Organisation &amp; propreté salle de vérification : <span class="exp-value">${formatOuiNon(safeValue(data, "tenuSalleVerif"))}</span></li>
+                  <li>Facing approvisionné : <span class="exp-value">${formatOuiNon(safeValue(data, "tenuFacing"))}</span></li>
+                  <li>Merchandising Contactologie &amp; DLU contrôlées : <span class="exp-value">${formatOuiNon(safeValue(data, "tenuContactoMerch"))}</span></li>
+                </ul>
+              </div>
+              <div class="label" style="margin-top:0.6rem;">Commentaire</div>
+              <div class="value">${safeValue(data, "tenuComment", "(aucun commentaire)")}</div>
+              <div class="label" style="margin-top:0.8rem;">Appréciation</div>
+              <div class="value">${pillForAppreciation(safeValue(data, "noteTenu", ""))}</div>
+            </div>
+            <div>
+              <div class="label">Visuels Tenue du magasin</div>
+              ${buildImageGrid("tenuImages")}
+            </div>
+          </div>
+          ${SLIDE_LOGO_HTML}
+        </section>
+      `;
+
+      /* 10 - VITRINE / DECO / TRAVAUX */
+      const slideVitrine = `
+        <section class="slide" data-slide-num="10">
+          <h2 class="slide-title">Vitrines / Décoration / Travaux </h2>
+          <div class="cover-layout">
+            <div>
+              <div class="label">Date vitrine</div>
+              <div class="value">${safeValue(data, "dateVitrine", "-")}</div>
+
+              <div class="label" style="margin-top:0.4rem;">Commentaire vitrine</div>
+              <div class="value">${safeValue(data, "vitrineComment", "(non renseigné)")}</div>
+
+              <div class="label" style="margin-top:0.4rem;">Décoration</div>
+              <div class="value">${safeValue(data, "decoComment", "(non renseigné)")}</div>
+
+              <div class="label" style="margin-top:0.4rem;">Travaux</div>
+              <div class="value">${safeValue(data, "travauxComment", "(non renseigné)")}</div>
+              
+              </div>
+            </div>
+            <div>
+              <div class="label">Photos de vitrines</div>
+              ${buildImageGrid("photosVitrine")}
+            </div>
+          </div>
+          ${SLIDE_LOGO_HTML}
+        </section>
+      `;
+
+      /* 11 - EXPÉRIENCE CLIENT */
+      const slideExperience = `
+        <section class="slide" data-slide-num="11">
+          <h2 class="slide-title">Expérience client</h2>
+          <div class="cover-layout">
+            <div>
+              <div class="label">Éléments observés</div>
+              <div class="value">
+                <ul class="exp-list">
+                  <li>Visite salle examen : <span class="exp-value">${formatOuiNon(safeValue(data, "expSalle"))}</span></li>
+                  <li>Explication mesure : <span class="exp-value">${formatOuiNon(safeValue(data, "expMesure"))}</span></li>
+                  <li>Découverte podium : <span class="exp-value">${formatOuiNon(safeValue(data, "expPodium"))}</span></li>
+                  <li>Lunettes connectées : <span class="exp-value">${formatOuiNon(safeValue(data, "expLunettesCo"))}</span></li>
+                  <li>Livraison plateau : <span class="exp-value">${formatOuiNon(safeValue(data, "expPlateau"))}</span></li>
+                  <li>Raccompagnement : <span class="exp-value">${formatOuiNon(safeValue(data, "expPorte"))}</span></li>
+                </ul>
+              </div>
+              <div class="label" style="margin-top:0.6rem;">Commentaire</div>
+              <div class="value">${safeValue(data, "expComment", "(aucun commentaire)")}</div>
+              <div class="label" style="margin-top:0.8rem;">Appréciation</div>
+              <div class="value">${pillForAppreciation(safeValue(data, "noteExpClient", ""))}</div>
+            </div>
+          </div>
+          ${SLIDE_LOGO_HTML}
+        </section>
+      `;
+
+      /* 12 - RELATION CLIENT */
+      const slideRelation = `
+        <section class="slide" data-slide-num="12">
+          <h2 class="slide-title">Relation client</h2>
+          <div class="cover-layout">
+            <div>
+              <div class="label">Éléments observés</div>
+              <div class="value">
+                <ul class="exp-list">
+                  <li>Consentement mail/SMS : <span class="exp-value">${formatOuiNon(safeValue(data, "relConsent"))}</span></li>
+                  <li>Proposition Garantie+ : <span class="exp-value">${formatOuiNon(safeValue(data, "relGarantie"))}</span></li>
+                  <li>Rappel / devis : <span class="exp-value">${formatOuiNon(safeValue(data, "relDevis"))}</span></li>
+                  <li>Rappel N-2 : <span class="exp-value">${formatOuiNon(safeValue(data, "relN2"))}</span></li>
+                  <li>Rappel J+15 : <span class="exp-value">${formatOuiNon(safeValue(data, "relJ15"))}</span></li>
+                  <li>RDV A+1 : <span class="exp-value">${formatOuiNon(safeValue(data, "relRDV"))}</span></li>
+                </ul>
+              </div>
+              <div class="label" style="margin-top:0.6rem;">Commentaire</div>
+              <div class="value">${safeValue(data, "relComment", "(aucun commentaire)")}</div>
+              <div class="label" style="margin-top:0.8rem;">Appréciation</div>
+              <div class="value">${pillForAppreciation(safeValue(data, "noteRelClient", ""))}</div>
+            </div>
+          </div>
+          ${SLIDE_LOGO_HTML}
+        </section>
+      `;
+
+      /* 13 - CONCLUSION DÉTAILLÉE */
+      const slideConclusion = `
+        <section class="slide" data-slide-num="13">
+          <h2 class="slide-title">Conclusion &amp; points à travailler</h2>
+          <div class="cover-layout">
+            <div>
+              <div class="label">Conclusion générale</div>
+              <div class="value">${safeValue(data, "conclusionComment", "(aucune conclusion renseignée)")}</div>
+              <div class="label" style="margin-top:0.8rem;">Commentaire sur la visite</div>
+              <div class="value">${safeValue(data, "commentVisite", "(aucun commentaire)")}</div>
+            </div>
+            <div style="text-align:center;">
+              <div class="label">Note globale sur 100</div>
+              ${buildGauge(safeValue(data, "note100", ""))}
+            </div>
+          </div>
+          ${SLIDE_LOGO_HTML}
+        </section>
+      `;
+
+      content.innerHTML =
+        slideCouverture +
+        slideCA +
+        slideBusiness +
+        slide2_0 +
+		slideGarantie +
+        slideChallenge +
+        slideMarketing +
+        slideCAAdmin +
+        slideContactologie +
+        slideTenu +
+        slideVitrine +
+        slideExperience +
+        slideRelation +
+        slideConclusion;
+
+      document.body.classList.add("visual-mode");
+    }
+
+    /* === BASCULE SAISIE / VISUALISATION ================================== */
+
+    function showSaisie() {
+      document.getElementById("form-container").style.display = "";
+      document.getElementById("preview-container").style.display = "none";
+      document.body.classList.remove("visual-mode");
+    }
+
+    function showVisualisation() {
+      saveForm();
+      buildPreview();
+      document.getElementById("form-container").style.display = "none";
+      document.getElementById("preview-container").style.display = "";
+      document.body.classList.add("visual-mode");
+    }
+
+    /* === INITIALISATION GLOBALE ========================================== */
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // TRI ALPHABÉTIQUE DES MAGASINS
+      const selectMagasin = document.getElementById("magasin");
+      if (selectMagasin) {
+        const options = Array.from(selectMagasin.querySelectorAll("option"));
+        const firstOption = options.shift();
+        const sorted = options.sort((a, b) =>
+          a.text.localeCompare(b.text, "fr", { sensitivity: "base" })
+        );
+        selectMagasin.innerHTML = "";
+        if (firstOption) selectMagasin.appendChild(firstOption);
+        sorted.forEach(o => selectMagasin.appendChild(o));
+      }
+
+      loadForm();
+      initImageInputs();
+      initPasteZones();
+
+      const form = document.getElementById("cr-form");
+
+      if (selectMagasin) {
+        selectMagasin.addEventListener("change", () => {
+          appliquerOutilsPourMagasin();
+        });
+        if (selectMagasin.value) {
+          appliquerOutilsPourMagasin();
+        }
+      }
+
+      // Autosauvegarde (hors radios déjà gérées plus bas)
+      form.addEventListener("input", (e) => {
+        if (e.target.type === "radio") return;
+        saveForm();
+      });
+
+      document.getElementById("btn-save").addEventListener("click", () => {
+        saveForm();
+        alert("Saisie sauvegardée dans ce navigateur.");
+      });
+
+      document.getElementById("btn-clear").addEventListener("click", () => {
+        if (!confirm("Effacer toutes les données de la visite ?")) return;
+        localStorage.removeItem(STORAGE_KEY);
+        form.reset();
+        Object.keys(imageStore).forEach(k => delete imageStore[k]);
+
+        // Réinitialise les vignettes
+        document.querySelectorAll('.image-thumbs[data-image-field]').forEach(c => {
+          c.innerHTML = '<div class="thumb-placeholder">Aucune image pour le moment</div>';
+        });
+
+        // Réinitialise les zones de collage
+        document.querySelectorAll(".image-paste-zone").forEach(zone => {
+          if (zone.dataset.originalText) {
+            zone.textContent = zone.dataset.originalText;
+          }
+          zone.classList.remove("image-paste-zone-success", "active-paste-zone");
+        });
+        currentPasteField = null;
+      });
+
+      // Radios "décochables"
+      form.addEventListener("click", (e) => {
+        const t = e.target;
+        if (t && t.type === "radio") {
+          if (t.wasChecked) {
+            t.checked = false;
+            t.wasChecked = false;
+          } else {
+            const group = form.querySelectorAll(`input[name="${t.name}"]`);
+            group.forEach(r => { r.wasChecked = false; });
+            t.wasChecked = true;
+          }
+          saveForm();
+        }
+      });
+
+      document.getElementById("btn-mode-saisie").addEventListener("click", showSaisie);
+      document.getElementById("btn-mode-visualisation").addEventListener("click", showVisualisation);
+      document.getElementById("btn-print").addEventListener("click", () => {
+        window.print();
+      });
+    });
+  </script>
+</body>
+</html>
