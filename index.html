@@ -522,49 +522,98 @@ body.visual-mode .pill.red   { background: #dc2626; color: #ffffff; }   /* Mauva
     }
 
     /* IMPRESSION */
-	@media print {
+@media print {
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+
+  body {
+    background: #ffffff !important;
+    color: #111827 !important;
+  }
+
+  header,
+  .actions,
+  .actions-form,
+  #btn-mode-saisie,
+  #btn-mode-visualisation,
+  #btn-print {
+    display: none !important;
+  }
+
+  main {
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .card,
+  .slide {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .card h2,
+  .slide-title,
+  .slide-title-main {
+    text-align: center;
+  }
 }
 
-    @media print {
-      body {
-        background: #ffffff !important;
-        color: #111827 !important;
-      }
-      header,
-      .actions,
-      .actions-form,
-      #btn-mode-saisie,
-      #btn-mode-visualisation,
-      #btn-print {
-        display: none !important;
-      }
-      main {
-        margin: 0;
-        padding: 0;
-        max-width: 100%;
-      }
-      .card,
-      .slide {
-        page-break-inside: avoid;
-        break-inside: avoid;
-        -webkit-column-break-inside: avoid;
-        -moz-page-break-inside: avoid;
-        margin-bottom: 1rem;
-      }
-      img {
-        max-width: 100%;
-        height: auto;
-      }
-      .card h2,
-      .slide-title,
-      .slide-title-main {
-        text-align: center;
-      }
-    }
+/* IMAGES PLEINE PAGE */
+body.visual-mode .slide.full-image-slide {
+  min-height: calc(100vh - 2rem);
+  display: flex;
+  flex-direction: column;
+}
+
+body.visual-mode .full-page-image-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.visual-mode .full-page-image-wrap img {
+  width: 100%;
+  max-width: 100%;
+  max-height: calc(100vh - 140px);
+  object-fit: contain;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 8mm;
+  }
+
+  body.visual-mode .slide.full-image-slide {
+    height: calc(100vh - 16mm);
+    page-break-before: always;
+    page-break-after: always;
+  }
+
+  body.visual-mode .full-page-image-wrap img {
+    width: 100%;
+    max-height: calc(100vh - 120px);
+    object-fit: contain;
+  }
+}
+.image-thumbs[data-image-field="caImages"],
+.image-thumbs[data-image-field="imgSynthese"],
+.image-thumbs[data-image-field="imgVolume"],
+.image-thumbs[data-image-field="imgVerres"] {
+  display: none;
+}
   </style>
 </head>
 <body>
@@ -929,7 +978,7 @@ body.visual-mode .pill.red   { background: #dc2626; color: #ffffff; }   /* Mauva
 
 
         <!-- 2.0 -->
-        <div class="card" data-num="3">
+        <div class="card" data-num="4">
           <h2>2.0</h2>
           <p class="note">Présence et activité des outils 2.0 (présence en magasin / actif).</p>
           <table class="yesno-table">
@@ -1010,7 +1059,7 @@ body.visual-mode .pill.red   { background: #dc2626; color: #ffffff; }   /* Mauva
         </div>
 
         <!-- Challenge & RBA -->
-        <div class="card" data-num="4">
+        <div class="card" data-num="5">
           <h2>Challenge & RBA</h2>
           <div class="grid-2">
             <div>
@@ -1043,7 +1092,7 @@ body.visual-mode .pill.red   { background: #dc2626; color: #ffffff; }   /* Mauva
         </div>
 
         <!-- Marketing / Opérations / Ophtalmos / CE -->
-        <div class="card" data-num="5">
+        <div class="card" data-num="6">
           <h2>Marketing / Opérations / Ophtalmos / CE</h2>
           <label for="opEnCours" class="subsection-title">Opération en cours</label>
           <textarea id="opEnCours" name="opEnCours"></textarea>
@@ -1056,7 +1105,7 @@ body.visual-mode .pill.red   { background: #dc2626; color: #ffffff; }   /* Mauva
         </div>
 
         <!-- Gestion administrative -->
-        <div class="card" data-num="6">
+        <div class="card" data-num="7">
           <h2>Gestion administrative</h2>
           <details open>
             <summary>Dû clients</summary>
@@ -1173,7 +1222,7 @@ body.visual-mode .pill.red   { background: #dc2626; color: #ffffff; }   /* Mauva
         </div>
 
         <!-- Contactologie & autres spécialités -->
-        <div class="card" data-num="7">
+        <div class="card" data-num="8">
           <h2>Contactologie</h2>
 
           <label for="contactologie" class="subsection-title">La contactologie</label>
@@ -1243,7 +1292,7 @@ body.visual-mode .pill.red   { background: #dc2626; color: #ffffff; }   /* Mauva
         </div>
 
         <!-- Tenue du magasin -->
-        <div class="card" data-num="8">
+        <div class="card" data-num="9">
           <h2>Tenue du magasin</h2>
           <p class="note">Cocher OUI / NON pour chaque point.</p>
           <table class="yesno-table yesno-compact">
@@ -1352,7 +1401,7 @@ body.visual-mode .pill.red   { background: #dc2626; color: #ffffff; }   /* Mauva
         </div>
 
         <!-- Vitrine / Décoration / Travaux -->
-        <div class="card" data-num="9">
+        <div class="card" data-num="10">
           <h2>Vitrine / Décoration / Travaux </h2>
           <label for="dateVitrine" class="subsection-title">Date vitrine</label>
           <input type="date" id="dateVitrine" name="dateVitrine" />
@@ -1407,7 +1456,7 @@ body.visual-mode .pill.red   { background: #dc2626; color: #ffffff; }   /* Mauva
         </div>
 
         <!-- Expérience client -->
-        <div class="card" data-num="10">
+        <div class="card" data-num="11">
           <h2>Expérience client</h2>
           <p class="note">Cocher OUI / NON pour chaque point.</p>
           <table class="yesno-table yesno-compact">
@@ -1467,7 +1516,7 @@ body.visual-mode .pill.red   { background: #dc2626; color: #ffffff; }   /* Mauva
         </div>
 
         <!-- Relation client -->
-        <div class="card" data-num="11">
+        <div class="card" data-num="12">
           <h2>Relation client</h2>
           <p class="note">Cocher OUI / NON pour chaque point.</p>
           <table class="yesno-table yesno-compact">
@@ -1527,7 +1576,7 @@ body.visual-mode .pill.red   { background: #dc2626; color: #ffffff; }   /* Mauva
         </div>
 
         <!-- Conclusion -->
-        <div class="card" data-num="12">
+        <div class="card" data-num="13">
           <h2>Conclusion & points à travailler</h2>
           <label for="conclusionComment" class="subsection-title">Conclusion générale</label>
           <textarea id="conclusionComment" name="conclusionComment"></textarea>
@@ -1871,6 +1920,21 @@ body.visual-mode .pill.red   { background: #dc2626; color: #ffffff; }   /* Mauva
       ).join("");
       return `<div class="${cls}">${imgs}</div>`;
     }
+	
+	function buildFullPageImageSlides(fieldName, title, slideNumPrefix) {
+  const urls = getImagesForField(fieldName);
+  if (!urls.length) return "";
+
+  return urls.map((url, idx) => `
+    <section class="slide full-image-slide" data-slide-num="${slideNumPrefix}${urls.length > 1 ? "." + (idx + 1) : ""}">
+      <h2 class="slide-title">${title}${urls.length > 1 ? " " + (idx + 1) : ""}</h2>
+      <div class="full-page-image-wrap">
+        <img src="${url}" alt="${title} ${idx + 1}" />
+      </div>
+      ${SLIDE_LOGO_HTML}
+    </section>
+  `).join("");
+}
 
     function initImageInputs() {
       const groups = document.querySelectorAll('.image-input-group[data-image-field]');
@@ -2079,9 +2143,9 @@ body.visual-mode .pill.red   { background: #dc2626; color: #ffffff; }   /* Mauva
               </div>
             </div>
             <div>
-              <div class="label">Visuels CA</div>
-              ${buildImageGrid("caImages")}
-            </div>
+              <div class="muted">
+    Les images CA sont affichées en pleine page après cette slide.
+  </div>
           </div>
           ${SLIDE_LOGO_HTML}
         </section>
@@ -2110,13 +2174,9 @@ body.visual-mode .pill.red   { background: #dc2626; color: #ffffff; }   /* Mauva
               </div>
             </div>
             <div>
-              <div class="label">Synthèse visuelle</div>
-              ${buildImageGrid("imgSynthese")}
-              <div class="label" style="margin-top:0.6rem;">Volume</div>
-              ${buildImageGrid("imgVolume")}
-              <div class="label" style="margin-top:0.6rem;">Verres</div>
-              ${buildImageGrid("imgVerres")}
-            </div>
+  <div class="muted">
+    Les images Business sont affichées en pleine page après cette slide.
+  </div>
           </div>
           ${SLIDE_LOGO_HTML}
         </section>
@@ -2456,20 +2516,27 @@ const slideGarantie = `
       `;
 
       content.innerHTML =
-        slideCouverture +
-        slideCA +
-        slideBusiness +
-        slide2_0 +
-		slideGarantie +
-        slideChallenge +
-        slideMarketing +
-        slideCAAdmin +
-        slideContactologie +
-        slideTenu +
-        slideVitrine +
-        slideExperience +
-        slideRelation +
-        slideConclusion;
+  slideCouverture +
+
+  slideCA +
+  buildFullPageImageSlides("caImages", "CA du magasin", "1A") +
+
+  slideBusiness +
+  buildFullPageImageSlides("imgSynthese", "Synthèse Business", "2A") +
+  buildFullPageImageSlides("imgVolume", "Volume", "2B") +
+  buildFullPageImageSlides("imgVerres", "Verres", "2C") +
+
+  slide2_0 +
+  slideGarantie +
+  slideChallenge +
+  slideMarketing +
+  slideCAAdmin +
+  slideContactologie +
+  slideTenu +
+  slideVitrine +
+  slideExperience +
+  slideRelation +
+  slideConclusion;
 
       document.body.classList.add("visual-mode");
     }
