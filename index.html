@@ -740,16 +740,33 @@
     if(count>0){zone.textContent=`✅ ${count} image${count>1?"s":""} associée${count>1?"s":""}`;zone.classList.add("image-paste-zone-success");}
     else{zone.textContent=zone.dataset.originalText;zone.classList.remove("image-paste-zone-success");}
   }
+  function readFileAsDataURL(file){
+    return new Promise(resolve=>{
+      const r=new FileReader();
+      r.onload=e=>resolve(e.target.result);
+      r.readAsDataURL(file);
+    });
+  }
   function addFilesToField(fieldName,fileList){
     if(!imageStore[fieldName])imageStore[fieldName]=[];
-    Array.from(fileList||[]).forEach(f=>imageStore[fieldName].push(URL.createObjectURL(f)));
-    renderThumbs(fieldName);updatePasteZoneStatus(fieldName);
+    const files=Array.from(fileList||[]);
+    if(!files.length)return;
+    let done=0;
+    files.forEach(f=>{
+      readFileAsDataURL(f).then(dataUrl=>{
+        imageStore[fieldName].push(dataUrl);
+        done++;
+        if(done===files.length){renderThumbs(fieldName);updatePasteZoneStatus(fieldName);}
+      });
+    });
   }
   function addPastedFileToField(fieldName,file){
     if(!file)return;
     if(!imageStore[fieldName])imageStore[fieldName]=[];
-    imageStore[fieldName].push(URL.createObjectURL(file));
-    renderThumbs(fieldName);updatePasteZoneStatus(fieldName);
+    readFileAsDataURL(file).then(dataUrl=>{
+      imageStore[fieldName].push(dataUrl);
+      renderThumbs(fieldName);updatePasteZoneStatus(fieldName);
+    });
   }
   function buildImageGrid(fieldName,singleCover=false){
     const urls=getImagesForField(fieldName);
